@@ -145,11 +145,8 @@ export const putData = (path, data, cb) => fetch(`${WFDB_STATE}/${path}`, {
     })
     .catch(ex => Janus.log("Put Data error:", ex));
 
-export const getData = (url, request, cb) => fetch(`${url}`,{
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body:  JSON.stringify(request)
-    }).then((response) => {
+export const getData = (url, cb) => fetch(`${url}`)
+    .then((response) => {
         if (response.ok) {
             return response.json().then(data => cb(data));
         }

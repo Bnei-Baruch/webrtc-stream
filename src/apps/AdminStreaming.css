@@ -81,6 +81,11 @@ body {
     padding: 0.1em 0.5em!important;
 }
 
+.timer {
+    font-size: 3em!important;
+    padding: 0.0em 0.2em!important;
+}
+
 .ui.massive.menu {
     font-size: 1.28571429rem;
 }

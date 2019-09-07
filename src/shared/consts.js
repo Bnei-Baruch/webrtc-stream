@@ -1,12 +1,6 @@
 
-export const MAX_FEEDS = 20;
-export const DATA_PORT = 5102;
-export const PROTOCOL_ROOM = 1000;
-export const GROUPS_ROOM = 1234;
-export const SHIDUR_ID = "ce332655-d702-40d0-83eb-a6b950976984";
-export const SNDMAN_ID = "90966d26-0777-4179-9773-d7cd5456a5ed";
-export const SDIOUT_ID = "91966d26-0777-4179-9773-d7cd5456a5ed";
-export const STORAN_ID = "e97c7b89-bd3a-46b5-87f2-7b64559561d4";
+export const CAP1_URL = process.env.REACT_APP_CAP1_URL;
+export const CAP2_URL = process.env.REACT_APP_CAP2_URL;
 export const GEO_IP_INFO = process.env.REACT_APP_GEO_IP_INFO;
 export const DANTE_IN_IP = process.env.REACT_APP_DANTE_IN_IP;
 export const WFRP_STATE = process.env.REACT_APP_WFRP_STATE;
