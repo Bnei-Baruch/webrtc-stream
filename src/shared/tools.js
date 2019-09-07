@@ -2,6 +2,7 @@ import {Janus} from "../lib/janus";
 import {
     JANUS_SRV_MKZLC,
     JANUS_SRV_EURFR,
+    STUN_SRV_MKZ,
     STUN_SRV_GXY,
     WFDB_STATE,
     WFRP_STATE
@@ -14,7 +15,7 @@ export const initJanus = (cb,er,lcl) => {
         callback: () => {
             let janus = new Janus({
                 server: lcl ? JANUS_SRV_MKZLC : JANUS_SRV_EURFR,
-                iceServers: [{urls: STUN_SRV_GXY}],
+                iceServers: [{urls: lcl ? STUN_SRV_MKZ : STUN_SRV_GXY}],
                 success: () => {
                     Janus.log(" :: Connected to JANUS");
                     cb(janus);

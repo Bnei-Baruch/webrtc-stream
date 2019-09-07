@@ -7,6 +7,7 @@ export const WFRP_STATE = process.env.REACT_APP_WFRP_STATE;
 export const WFDB_STATE = process.env.REACT_APP_WFDB_STATE;
 export const STUN_SRV_STR = process.env.REACT_APP_STUN_SRV_STR;
 export const STUN_SRV_GXY = process.env.REACT_APP_STUN_SRV_GXY;
+export const STUN_SRV_MKZ = process.env.REACT_APP_STUN_SRV_MKZ;
 export const ADMIN_SECRET = process.env.REACT_APP_ADMIN_SECRET;
 export const SECRET = process.env.REACT_APP_SECRET;
 export const JANUS_SRV_VRT = process.env.REACT_APP_JANUS_SRV_VRT;
