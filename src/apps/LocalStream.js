@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Janus } from "../lib/janus";
-import { Segment, Header, Select, Button, Grid } from 'semantic-ui-react';
+import {Segment, Label, Select, Button, Grid, Menu} from 'semantic-ui-react';
 import VolumeSlider from "../components/VolumeSlider";
-import {admin_videos_options, audios_options, JANUS_SRV_EURFR} from "../shared/consts";
+import {ulpan1_audio_options, ulpan2_audio_options, JANUS_SRV_EURFR} from "../shared/consts";
 import './AdminStreaming.css';
 import {initJanus} from "../shared/tools";
 
@@ -10,36 +10,46 @@ class LocalStream extends Component {
 
     state = {
         janus: null,
-        ulpan1: null,
-        ulpan2: null,
+        videostream: null,
+        audiostream: null,
         audio: null,
         video: false,
         servers: `${JANUS_SRV_EURFR}`,
-        videos: 1,
         audios: 15,
         muted: true,
-        started: false
+        started: false,
+        ulpan: "Ulpan - 1",
     };
 
     componentDidMount() {
-        this.initApp()
+        this.initApp(this.props.id);
     };
 
     componentWillUnmount() {
         this.state.janus.destroy();
     };
 
-    initApp = () => {
-        initJanus(janus => {
-            this.setState({janus});
-            this.setState({started: true});
-            this.initVideoStream("ulpan1", 511);
-            this.initVideoStream("ulpan2", 521)
-        }, er => {
+    initApp = (id) => {
+        if(id) {
             setTimeout(() => {
-                this.initApp();
-            }, 5000);
-        }, true);
+                let ulpan = id === 511 ? "Ulpan - 1" : "Ulpan - 2";
+                let audios = id === 511 ? 512 : 522;
+                this.setState({ulpan, audios, janus: this.props.janus} , () => {
+                    this.initVideoStream(511);
+                });
+            }, 1000);
+        } else {
+            initJanus(janus => {
+                let id = this.state.ulpan === "Ulpan - 1" ? 511 : 521;
+                let audios = id === 511 ? 512 : 522;
+                this.setState({janus,audios});
+                this.initVideoStream(id);
+            }, er => {
+                setTimeout(() => {
+                    this.initApp();
+                }, 5000);
+            }, true);
+        }
     };
 
     checkAutoPlay = () => {
@@ -51,14 +61,14 @@ class LocalStream extends Component {
         }
     };
 
-    initVideoStream = (u, id) => {
+    initVideoStream = (id) => {
         let {janus} = this.state;
         janus.attach({
             plugin: "janus.plugin.streaming",
             opaqueId: "videostream-"+Janus.randomString(12),
             success: (videostream) => {
                 Janus.log(videostream);
-                this.setState({[u]: videostream});
+                this.setState({videostream});
                 videostream.send({message: {request: "watch", id: id}});
             },
             error: (error) => {
@@ -75,7 +85,7 @@ class LocalStream extends Component {
                     " packets on mid " + mid + " (" + lost + " lost packets)");
             },
             onmessage: (msg, jsep) => {
-                this.onStreamingMessage(this.state[u], msg, jsep, false);
+                this.onStreamingMessage(this.state.videostream, msg, jsep, false);
             },
             onremotetrack: (track, mid, on) => {
                 Janus.debug(" ::: Got a remote video track event :::");
@@ -84,7 +94,7 @@ class LocalStream extends Component {
                 let stream = new MediaStream();
                 stream.addTrack(track.clone());
                 Janus.log("Created remote video stream:", stream);
-                let video = this.refs[u];
+                let video = this.refs.remoteVideo;
                 Janus.attachMediaStream(video, stream);
             },
             oncleanup: () => {
@@ -216,60 +226,69 @@ class LocalStream extends Component {
     };
 
 
-  render() {
+    render() {
 
-      const {servers, videos, audios, muted, video} = this.state;
+        const {servers, videos, audios, muted, ulpan} = this.state;
 
-    return (
-
-      <Segment compact color='brown' raised>
-
-          <Segment textAlign='center' className="ingest_segment" raised secondary>
-              <Grid columns={2} stackable textAlign='center'>
-                  {/*<Divider vertical>Or</Divider>*/}
-
-                  <Grid.Row verticalAlign='middle'>
-                      <Grid.Column>
-                          <Header icon>
-
-                              Find Country
-                          </Header>
-
-                          <video ref="ulpan1"
-                                 id="ulpan1"
-                                 width="100%"
-                                 height="100%"
-                                 autoPlay={true}
-                                 controls={false}
-                                 muted={true}
-                                 playsinline={true}/>
-
-                      </Grid.Column>
-
-                      <Grid.Column>
-                          <Header icon>
-
-                              Add New Country
-                          </Header>
-
-                          <video ref="ulpan2"
-                                 id="ulpan2"
-                                 width="100%"
-                                 height="100%"
-                                 autoPlay={true}
-                                 controls={false}
-                                 muted={true}
-                                 playsinline={true}/>
-
-                      </Grid.Column>
-                  </Grid.Row>
-              </Grid>
-          </Segment>
+        return (
 
 
-      </Segment>
-    );
-  }
+            <Segment textAlign='center' className="ingest_segment" raised secondary>
+                <Menu secondary size='huge'>
+                    <Menu.Item>
+                        <Label size='massive'>
+                            {ulpan}
+                        </Label>
+                    </Menu.Item>
+                    <Menu.Item>
+                        <Select
+                            compact
+                            error={!audios}
+                            placeholder="Audio:"
+                            value={audios}
+                            options={this.state.ulpan === "Ulpan - 1" ? ulpan1_audio_options : ulpan2_audio_options}
+                            onChange={(e,{value}) => this.setAudio(value)} />
+                    </Menu.Item>
+                    <Menu.Item>
+                        <Button positive={!muted} size='huge'
+                                negative={muted}
+                                icon={muted ? "volume off" : "volume up"}
+                                onClick={this.audioMute}/>
+                    </Menu.Item>
+                </Menu>
+
+
+                <video ref="remoteVideo"
+                       id="remoteVideo"
+                       width="100%"
+                       height="100%"
+                       autoPlay={true}
+                       controls={false}
+                       muted={true}
+                       playsInline={true} />
+
+                <audio ref="remoteAudio"
+                       id="remoteAudio"
+                       autoPlay={true}
+                       controls={false}
+                       muted={muted} />
+
+                <Grid columns={3}>
+                    <Grid.Column>
+                    </Grid.Column>
+                    <Grid.Column width={14}>
+                        <VolumeSlider volume={this.setVolume} />
+                    </Grid.Column>
+                    <Grid.Column width={1}>
+                        <Button color='blue'
+                                icon='expand arrows alternate'
+                                onClick={this.toggleFullScreen}/>
+                    </Grid.Column>
+                </Grid>
+            </Segment>
+
+        );
+    }
 }
 
 export default LocalStream;

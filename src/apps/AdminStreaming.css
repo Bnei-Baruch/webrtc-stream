@@ -3,6 +3,14 @@ body {
     height: 90%;
     font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
 }
+
+video {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    max-height: 360px;
+}
+
 .virtual_segment {
     width: 100vw;
     height: 100vh;
@@ -14,6 +22,8 @@ body {
     align-items: center;
     padding: .8rem .5rem;
     flex-wrap:wrap;
+    max-width: 700px;
+    min-width: 470px;
 }
 
 .ingest_segment > .menu,

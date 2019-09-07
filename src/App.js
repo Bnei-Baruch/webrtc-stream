@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import CaptureMonitor from "./apps/CaptureMonitor";
+// import CaptureMonitor from "./apps/CaptureMonitor";
+// import LocalStream from "./apps/LocalStream";
+import IngestMonitor from "./apps/IngestMonitor";
 // import AdminStreaming from "./apps/AdminStreaming";
 // import AudioOut from "./apps/AudioOut";
 
@@ -11,7 +13,9 @@ class App extends Component {
         <Fragment>
            {/*<AdminStreaming/>*/}
            {/*<AudioOut />*/}
-           <CaptureMonitor />
+           {/*<CaptureMonitor />*/}
+           {/*<LocalStream />*/}
+           <IngestMonitor />
         </Fragment>
     );
   }

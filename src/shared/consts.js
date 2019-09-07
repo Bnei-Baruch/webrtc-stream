@@ -138,6 +138,16 @@ export const audio_options = [
     { key: 17, value: 17, text: 'Heb - Eng' },
 ];
 
+export const ulpan1_audio_options = [
+    { key: 'he', value: 512, text: 'Hebrew' },
+    { key: 'ru', value: 513, text: 'Russian' },
+];
+
+export const ulpan2_audio_options = [
+    { key: 'he', value: 522, text: 'Hebrew' },
+    { key: 'ru', value: 523, text: 'Russian' },
+];
+
 export const audiog_options = [
     { key: 101, value: 101, text: 'Workshop', disabled: true, icon: "tags", selected: true},
     { key: 2, value: 2, flag: 'il', text: 'Hebrew' },
