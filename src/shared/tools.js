@@ -2,8 +2,8 @@ import {Janus} from "../lib/janus";
 import {
     JANUS_ADMIN_GXY,
     JANUS_ADMIN_VRT,
-    JANUS_SRV_VRT,
-    JANUS_SRV_GXY,
+    JANUS_SRV_MKZLC,
+    JANUS_SRV_EURFR,
     ADMIN_SECRET,
     STUN_SRV_GXY,
     WFDB_STATE,
@@ -11,12 +11,12 @@ import {
 } from "./consts";
 
 
-export const initJanus = (cb,er,mlt) => {
+export const initJanus = (cb,er,lcl) => {
     Janus.init({
         debug: process.env.NODE_ENV !== 'production' ? ["log", "error"] : ["error"],
         callback: () => {
             let janus = new Janus({
-                server: mlt ? JANUS_SRV_GXY : JANUS_SRV_VRT,
+                server: lcl ? JANUS_SRV_MKZLC : JANUS_SRV_EURFR,
                 iceServers: [{urls: STUN_SRV_GXY}],
                 success: () => {
                     Janus.log(" :: Connected to JANUS");
@@ -166,3 +166,73 @@ export const geoInfo = (url,cb) => fetch(`${url}`)
     }
 })
     .catch(ex => console.log(`get geoInfo`, ex));
+
+function getBufferAverage(analyser) {
+    var array =  new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(array);
+    var average = getAverageVolume(array);
+    return average;
+}
+
+function getAverageVolume(array) {
+    var values = 0;
+    var average;
+    var length = array.length;
+    for (var i = 0; i < length; i++) {
+        values += array[i];
+    }
+    average = values / length;
+    return average;
+}
+
+var p = {};
+
+const streamVisualizer = (analyser, canvas, width, n) => {
+    var canvas;
+    var canvasctx;
+    var drawContext;
+    var gradient;
+    var mn = width/128;
+
+    drawContext = canvas.getContext('2d');
+    gradient = drawContext.createLinearGradient(0,0,width,10);
+    gradient.addColorStop(0,'green');
+    gradient.addColorStop(0.20,'#80ff00');
+    gradient.addColorStop(0.85,'orange');
+    gradient.addColorStop(1,'red');
+
+    var sampleAudioStream = function() {
+        var average = getBufferAverage(analyser);
+        drawContext.clearRect(0, 0, width, 40);
+        drawContext.fillStyle=gradient;
+        drawContext.fillRect(0,0,average*mn,10);
+    };
+
+    p[n] = setInterval(sampleAudioStream, 50);
+}
+
+export const cloneStream = (stream, n) => {
+    console.log(" --::-- clone called: ",stream,n);
+    window["a"+n] = stream;
+    window["ac"+n] = new AudioContext();
+    window["ac"+n].createMediaStreamSource(window.window["a"+n]);
+    window["ws"+n] = window["ac"+n].createMediaStreamSource(window.window["a"+n]);
+    window["wa"+n] = window["ac"+n].createMediaStreamDestination();
+    window["ws"+n].connect(window["wa"+n]);
+    window["aout"+n] = new Audio();
+    window["aout"+n].src = URL.createObjectURL(window["wa"+n].stream);
+    window["aout"+n].play();
+    // if(localStorage.outstore) {
+    //     var sinkid = store[n]["sinkid"];
+    //     var sinktext = store[n]["sinktext"];
+    //     window["aout"+n].setSinkId(sinkid).then(function() {
+    //         console.log('Success, audio output device attached: ' + sinkid);
+    //     })
+    // }
+    window["an"+n] = window["ac"+n].createAnalyser();
+    window["ws"+n].connect(window["an"+n]);
+    streamVisualizer(window["an"+n], document.getElementById('canvas_'+n),250,n);
+    //var streamVisualizer2 = new streamVisualizer(window["an"+n], document.getElementById('canvas_'+n),250);
+    //freqs = new Uint8Array(analyser.frequencyBinCount);
+    //times = new Uint8Array(analyser.frequencyBinCount);
+}

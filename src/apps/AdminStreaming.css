@@ -77,6 +77,10 @@ body {
     border: 1px solid #a5e4b5;
 }
 
+.vu {
+    padding: 0.1em 0.5em!important;
+}
+
 .ui.massive.menu {
     font-size: 1.28571429rem;
 }

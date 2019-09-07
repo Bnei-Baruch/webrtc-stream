@@ -24,6 +24,7 @@ export const JANUS_SRV_EURND = process.env.REACT_APP_JANUS_SRV_EURND;
 export const JANUS_SRV_EURUK = process.env.REACT_APP_JANUS_SRV_EURUK;
 export const JANUS_SRV_EURFR = process.env.REACT_APP_JANUS_SRV_EURFR;
 export const JANUS_SRV_ISRLC = process.env.REACT_APP_JANUS_SRV_ISRLC;
+export const JANUS_SRV_MKZLC = process.env.REACT_APP_JANUS_SRV_MKZLC;
 export const JANUS_IP_ISRPT = process.env.REACT_APP_JANUS_IP_ISRPT;
 export const JANUS_IP_EURND = process.env.REACT_APP_JANUS_IP_EURND;
 export const JANUS_IP_EURUK = process.env.REACT_APP_JANUS_IP_EURUK;
@@ -98,6 +99,38 @@ export const audios_options = [
     { key: 203, value: 203, text: 'Galaxy2' },
     { key: 202, value: 202, text: 'Galaxy4' },
     { key: 204, value: 204, text: 'Galaxy5' },
+];
+
+export const audio_options = [
+    { key: 'he', value: 15, text: 'Hebrew' },
+    { key: 'ru', value: 23, text: 'Russian' },
+    { key: 'en', value: 24, text: 'English' },
+    { key: 'es', value: 26, text: 'Spanish' },
+    { key: 'fr', value: 25, text: 'French' },
+    { key: 'it', value: 28, text: 'Italian' },
+    { key: 'de', value: 27, text: 'German' },
+    { key: 'tr', value: 42, text: 'Turkish' },
+    { key: 'pt', value: 41, text: 'Portuguese' },
+    { key: 'bg', value: 43, text: 'Bulgarian' },
+    { key: 'ka', value: 44, text: 'Georgian' },
+    { key: 'ro', value: 45, text: 'Romanian' },
+    { key: 'hu', value: 46, text: 'Hungarian' },
+    { key: 'sv', value: 47, text: 'Swedish' },
+    { key: 'lt', value: 48, text: 'Lithuanian' },
+    { key: 'hr', value: 49, text: 'Croatian' },
+    { key: 'ja', value: 50, text: 'Japanese' },
+    { key: 'sl', value: 51, text: 'Slovenian' },
+    { key: 'pl', value: 52, text: 'Polish' },
+    { key: 'no', value: 53, text: 'Norwegian' },
+    { key: 'lv', value: 54, text: 'Latvian' },
+    { key: 'ua', value: 55, text: 'Ukrainian' },
+    { key: 'nl', value: 56, text: 'Dutch' },
+    { key: 'cn', value: 57, text: 'Chinese' },
+    { key: 'et', value: 58, text: 'Amharic' },
+    { key: 'in', value: 59, text: 'Hindi' },
+    { key: 'ir', value: 60, text: 'Persian' },
+    { key: 10, value: 10, text: 'Heb - Rus' },
+    { key: 17, value: 17, text: 'Heb - Eng' },
 ];
 
 export const audiog_options = [
