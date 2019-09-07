@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Janus } from "../lib/janus";
-import {Segment, Menu, Select, Button, Grid, Message} from 'semantic-ui-react';
+import {Segment, Menu, Select, Button, Message} from 'semantic-ui-react';
 import {cloneStream, initJanus} from "../shared/tools";
-import VolumeSlider from "../components/VolumeSlider";
-import {admin_videos_options, audio_options, JANUS_SRV_EURFR} from "../shared/consts";
+//import VolumeSlider from "../components/VolumeSlider";
+import {audio_options, JANUS_SRV_EURFR} from "../shared/consts";
 import './AdminStreaming.css';
 
 class AudioOut extends Component {
@@ -13,6 +13,12 @@ class AudioOut extends Component {
         videostream: null,
         audiostream: null,
         datastream: null,
+        handles:[
+            {panel: {audios: 15, muted: true, audio_device: null, audiostream: null}},
+            {panel: {audios: 15, muted: true, audio_device: null, audiostream: null}},
+            {panel: {audios: 15, muted: true, audio_device: null, audiostream: null}},
+            {panel: {audios: 15, muted: true, audio_device: null, audiostream: null}}
+            ],
         audio: null,
         video: false,
         servers: `${JANUS_SRV_EURFR}`,
@@ -72,16 +78,18 @@ class AudioOut extends Component {
         }, { audio: true, video: false });
     };
 
-    setDevice = (audio_device) => {
-        if(audio_device !== this.state.audio_device) {
-            this.setState({audio_device});
-            if(this.state.audio_device !== "") {
-                localStorage.setItem("audio_device", audio_device);
+    setDevice = (audio_device,i) => {
+        let {handles} = this.state;
+        if(handles[i].panel.audio_device !== audio_device) {
+            handles[i].panel.audio_device = audio_device;
+            this.setState({handles});
+            if(handles[i].panel.audio_device !== "") {
+                //localStorage.setItem("audio_device", audio_device);
                 Janus.log(" :: Going to check Devices: ");
-                let audio = this.refs.remoteAudio;
-                window["aout"+1].setSinkId(audio_device)
-                    .then(() => console.log('Success, audio output device attached: ' + audio_device))
-                    .catch((error) => console.error(error));
+                //let audio = this.refs.remoteAudio;
+                window["aout"+i].setSinkId(audio_device)
+                    .then(() => Janus.log('Success, audio output device attached: ' + audio_device))
+                    .catch((error) => Janus.error(error));
                 // getDevicesStream(audio_device,stream => {
                 //     Janus.log(" :: Check Devices: ", stream);
                 //     let myaudio = this.refs.localVideo;
@@ -97,14 +105,16 @@ class AudioOut extends Component {
         }
     };
 
-    initAudioStream = () => {
+    initAudioStream = (i) => {
         let {janus,audios} = this.state;
         janus.attach({
             plugin: "janus.plugin.streaming",
             opaqueId: "audiostream-"+Janus.randomString(12),
             success: (audiostream) => {
                 Janus.log(audiostream);
-                this.setState({audiostream});
+                let {handles} = this.state;
+                handles[i].panel.audiostream = audiostream;
+                this.setState({handles});
                 audiostream.send({message: {request: "watch", id: audios}});
                 audiostream.muteAudio()
             },
@@ -122,22 +132,20 @@ class AudioOut extends Component {
                     " packets on mid " + mid + " (" + lost + " lost packets)");
             },
             onmessage: (msg, jsep) => {
-                this.onStreamingMessage(this.state.audiostream, msg, jsep, false);
+                this.onStreamingMessage(this.state.handles[i].panel.audiostream, msg, jsep, false);
             },
             onremotetrack: (track, mid, on) => {
                 Janus.debug(" ::: Got a remote audio track event :::");
                 Janus.debug("Remote audio track (mid=" + mid + ") " + (on ? "added" : "removed") + ":", track);
-                if(this.state.audio_stream) return;
+                if(!on) return;
                 let stream = new MediaStream();
                 stream.addTrack(track.clone());
-                this.setState({audio_stream: stream});
                 Janus.log("Created remote audio stream:", stream);
-                let audio = this.refs.remoteAudio;
+                let audio = this.refs["a" + i];
                 audio.muted = true;
                 audio.pause();
                 Janus.attachMediaStream(audio, stream);
-                cloneStream(stream, 1)
-                //StreamVisualizer2(stream, this.refs.canvas1.current,50);
+                cloneStream(stream, i)
             },
             oncleanup: () => {
                 Janus.log("Got a cleanup notification");
@@ -171,10 +179,12 @@ class AudioOut extends Component {
         }
     };
 
-    setAudio = (audios) => {
-        if(this.state.audiostream) {
-            this.setState({audios});
-            this.state.audiostream.send({message: {request: "switch", id: audios}});
+    setAudio = (audios,i) => {
+        let {handles} = this.state;
+        if(handles[i].panel.audiostream) {
+            handles[i].panel.audios = audios;
+            this.setState({handles});
+            handles[i].panel.audiostream.send({message: {request: "switch", id: audios}});
         }
     };
 
@@ -182,13 +192,15 @@ class AudioOut extends Component {
         this.refs.remoteAudio.volume = value;
     };
 
-    audioMute = () => {
-        this.setState({muted: !this.state.muted});
-        this.refs.remoteAudio.muted = !this.state.muted;
-        if(!this.state.audiostream && this.state.muted) {
-            this.initAudioStream();
+    audioMute = (i) => {
+        let {handles} = this.state;
+        handles[i].panel.muted = !handles[i].panel.muted;
+        this.setState({handles});
+        this.refs["a" + i].muted = !handles[i].panel.muted;
+        if(!handles[i].panel.audiostream && !handles[i].panel.muted) {
+            this.initAudioStream(i);
         } else {
-            this.state.audiostream.hangup();
+            handles[i].panel.audiostream.hangup();
             this.setState({audiostream: null, audio_stream: null});
         }
     };
@@ -196,55 +208,63 @@ class AudioOut extends Component {
 
   render() {
 
-      const {audios, muted, audio_devices, audio_device} = this.state;
+      const {audios, muted, audio_devices, audio_device, handles} = this.state;
 
       let adevices_list = audio_devices.map((device,i) => {
           const {label, deviceId} = device;
           return ({ key: i, text: label, value: deviceId})
       });
 
+      let audio_panels = handles.map((o,i) => {
+          return (
+              <div key={i}>
+                  <Segment raised secondary>
+                      <Menu secondary>
+                          <Menu.Item>
+                              <Button positive={!handles[i].panel.muted}
+                                      negative={handles[i].panel.muted}
+                                      icon={handles[i].panel.muted ? "volume off" : "volume up"}
+                                      onClick={() => this.audioMute(i)} />
+                          </Menu.Item>
+                          <Menu.Item>
+                              <Select
+                                  compact
+                                  error={!handles[i].panel.audios}
+                                  placeholder="Audio:"
+                                  value={handles[i].panel.audios}
+                                  options={audio_options}
+                                  onChange={(e,{value}) => this.setAudio(value,i)} />
+                          </Menu.Item>
+                          <Menu.Item>
+                              <Select
+                                  disabled={false}
+                                  error={!handles[i].panel.audio_device}
+                                  placeholder="Select Device:"
+                                  value={handles[i].panel.audio_device}
+                                  options={adevices_list}
+                                  onChange={(e, {value}) => this.setDevice(value,i)}/>
+                          </Menu.Item>
+                      </Menu>
+                      <Message className='vu'>
+                          <canvas id={"canvas_" + i} width="250" height="10" />
+                      </Message>
+                      {/*<VolumeSlider volume={() => this.setVolume(i)} />*/}
+                  </Segment>
+
+                  <audio ref={"a" + i}
+                         id={"a" + i}
+                         autoPlay={true}
+                         controls={false}
+                         muted={true} />
+              </div>
+          )
+      });
+
+
     return (
 
       <Segment compact>
-
-          <Segment raised secondary>
-              <Menu secondary>
-                  <Menu.Item>
-                      <Button positive={!muted}
-                              negative={muted}
-                              icon={muted ? "volume off" : "volume up"}
-                              onClick={this.audioMute} />
-                  </Menu.Item>
-                  <Menu.Item>
-                      <Select
-                          compact
-                          error={!audios}
-                          placeholder="Audio:"
-                          value={audios}
-                          options={audio_options}
-                          onChange={(e,{value}) => this.setAudio(value)} />
-                  </Menu.Item>
-                  <Menu.Item>
-                      <Select
-                              disabled={false}
-                              error={!audio_device}
-                              placeholder="Select Device:"
-                              value={audio_device}
-                              options={adevices_list}
-                              onChange={(e, {value}) => this.setDevice(value)}/>
-                  </Menu.Item>
-              </Menu>
-              <Message className='vu'>
-                  <canvas id="canvas_1" width="250" height="10" />
-              </Message>
-              <VolumeSlider volume={this.setVolume} />
-          </Segment>
-
-          <audio ref="remoteAudio"
-                 id="remoteAudio"
-                 autoPlay={true}
-                 controls={false}
-                 muted={muted} />
+          {audio_panels}
       </Segment>
     );
   }
