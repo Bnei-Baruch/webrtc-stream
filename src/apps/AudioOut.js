@@ -81,9 +81,11 @@ class AudioOut extends Component {
     setDevice = (audio_device,i) => {
         let {handles} = this.state;
         if(handles[i].panel.audio_device !== audio_device) {
-            handles[i].panel.audio_device = audio_device;
-            this.setState({handles});
-            if(handles[i].panel.audio_device !== "") {
+            if(handles[i].panel.audiostream) {
+                handles[i].panel.audio_device = audio_device;
+                this.setState({handles});
+            }
+            if(handles[i].panel.audio_device !== "" && window["aout"+i]) {
                 //localStorage.setItem("audio_device", audio_device);
                 Janus.log(" :: Going to check Devices: ");
                 //let audio = this.refs.remoteAudio;
@@ -200,15 +202,16 @@ class AudioOut extends Component {
         if(!handles[i].panel.audiostream && !handles[i].panel.muted) {
             this.initAudioStream(i);
         } else {
-            handles[i].panel.audiostream.hangup();
-            this.setState({audiostream: null, audio_stream: null});
+            //window["aout"+i].muted = true;
+            //handles[i].panel.audiostream.hangup();
+            //this.setState({audiostream: null, audio_stream: null});
         }
     };
 
 
   render() {
 
-      const {audios, muted, audio_devices, audio_device, handles} = this.state;
+      const {audio_devices, handles} = this.state;
 
       let adevices_list = audio_devices.map((device,i) => {
           const {label, deviceId} = device;
@@ -224,11 +227,12 @@ class AudioOut extends Component {
                               <Button positive={!handles[i].panel.muted}
                                       negative={handles[i].panel.muted}
                                       icon={handles[i].panel.muted ? "volume off" : "volume up"}
+                                      disabled={handles[i].panel.audiostream}
                                       onClick={() => this.audioMute(i)} />
                           </Menu.Item>
                           <Menu.Item>
                               <Select
-                                  compact
+
                                   error={!handles[i].panel.audios}
                                   placeholder="Audio:"
                                   value={handles[i].panel.audios}

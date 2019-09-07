@@ -1,10 +1,7 @@
 import {Janus} from "../lib/janus";
 import {
-    JANUS_ADMIN_GXY,
-    JANUS_ADMIN_VRT,
     JANUS_SRV_MKZLC,
     JANUS_SRV_EURFR,
-    ADMIN_SECRET,
     STUN_SRV_GXY,
     WFDB_STATE,
     WFRP_STATE
@@ -188,8 +185,8 @@ function getAverageVolume(array) {
 var p = {};
 
 const streamVisualizer = (analyser, canvas, width, n) => {
-    var canvas;
-    var canvasctx;
+    //var canvas;
+    //var canvasctx;
     var drawContext;
     var gradient;
     var mn = width/128;

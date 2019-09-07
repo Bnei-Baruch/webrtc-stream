@@ -102,6 +102,15 @@ export const audios_options = [
 ];
 
 export const audio_options = [
+    { key: 101, value: 101, text: ':: Workshop ::', disabled: true, icon: "tags"},
+    { key: 2, value: 2, text: 'Hebrew' },
+    { key: 3, value: 3, text: 'Russian' },
+    { key: 4, value: 4, text: 'English' },
+    { key: 6, value: 6, text: 'Spanish' },
+    { key: 5, value: 5, text: 'French' },
+    { key: 8, value: 8, text: 'Italian' },
+    { key: 7, value: 7, text: 'German' },
+    { key: 102, value: 102, text: ':: Sources ::', disabled: true, icon: "tags" },
     { key: 'he', value: 15, text: 'Hebrew' },
     { key: 'ru', value: 23, text: 'Russian' },
     { key: 'en', value: 24, text: 'English' },
@@ -129,6 +138,7 @@ export const audio_options = [
     { key: 'et', value: 58, text: 'Amharic' },
     { key: 'in', value: 59, text: 'Hindi' },
     { key: 'ir', value: 60, text: 'Persian' },
+    { key: 103, value: 103, text: ' :: Special ::', disabled: true, icon: "tags" },
     { key: 10, value: 10, text: 'Heb - Rus' },
     { key: 17, value: 17, text: 'Heb - Eng' },
 ];
