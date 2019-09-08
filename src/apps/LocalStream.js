@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Janus } from "../lib/janus";
-import {Segment, Label, Select, Button, Grid, Menu} from 'semantic-ui-react';
+import {Segment, Label, Select, Button, Table, Menu} from 'semantic-ui-react';
 import VolumeSlider from "../components/VolumeSlider";
 import {ulpan1_audio_options, ulpan2_audio_options, JANUS_SRV_EURFR} from "../shared/consts";
 import './AdminStreaming.css';
@@ -139,6 +139,7 @@ class LocalStream extends Component {
                 this.setState({audio_stream: stream});
                 Janus.log("Created remote audio stream:", stream);
                 let audio = this.refs.remoteAudio;
+                this.checkAutoPlay();
                 Janus.attachMediaStream(audio, stream);
                 //StreamVisualizer2(stream, this.refs.canvas1.current,50);
             },
@@ -209,17 +210,6 @@ class LocalStream extends Component {
         }
     };
 
-    videoMute = () => {
-        let video = this.state.video;
-        if(!this.state.videostream && !video) {
-            this.initVideoStream();
-        } else {
-            this.state.videostream.hangup();
-            this.setState({videostream: null, video_stream: null});
-        }
-        this.setState({video: !video});
-    };
-
     toggleFullScreen = () => {
         let vid = this.refs.remoteVideo;
         if(vid) vid.webkitEnterFullscreen();
@@ -228,7 +218,9 @@ class LocalStream extends Component {
 
     render() {
 
-        const {servers, videos, audios, muted, ulpan} = this.state;
+        const {audios, muted, ulpan} = this.state;
+
+        const url = ulpan === "Ulpan - 1" ? "ulpan1" : "ulpan2";
 
         return (
 
@@ -236,7 +228,7 @@ class LocalStream extends Component {
             <Segment textAlign='center' className="ingest_segment" raised secondary>
                 <Menu secondary size='huge'>
                     <Menu.Item>
-                        <Label size='massive'>
+                        <Label as='a' onClick={() => window.open(`${url}`, "_blank")} size='massive'>
                             {ulpan}
                         </Label>
                     </Menu.Item>
@@ -249,12 +241,6 @@ class LocalStream extends Component {
                             options={this.state.ulpan === "Ulpan - 1" ? ulpan1_audio_options : ulpan2_audio_options}
                             onChange={(e,{value}) => this.setAudio(value)} />
                     </Menu.Item>
-                    <Menu.Item>
-                        <Button positive={!muted} size='huge'
-                                negative={muted}
-                                icon={muted ? "volume off" : "volume up"}
-                                onClick={this.audioMute}/>
-                    </Menu.Item>
                 </Menu>
 
 
@@ -262,9 +248,10 @@ class LocalStream extends Component {
                        id="remoteVideo"
                        width="100%"
                        height="100%"
+                       muted
+                       defaultMuted
                        autoPlay={true}
-                       controls={false}
-                       muted={true}
+                       controls={true}
                        playsInline={true} />
 
                 <audio ref="remoteAudio"
@@ -273,18 +260,26 @@ class LocalStream extends Component {
                        controls={false}
                        muted={muted} />
 
-                <Grid columns={3}>
-                    <Grid.Column>
-                    </Grid.Column>
-                    <Grid.Column width={14}>
-                        <VolumeSlider volume={this.setVolume} />
-                    </Grid.Column>
-                    <Grid.Column width={1}>
-                        <Button color='blue'
-                                icon='expand arrows alternate'
-                                onClick={this.toggleFullScreen}/>
-                    </Grid.Column>
-                </Grid>
+                <Table basic='very' fixed unstackable>
+                    <Table.Row>
+                        <Table.Cell width={5} >
+                            <VolumeSlider volume={this.setVolume} />
+                        </Table.Cell>
+                        <Table.Cell width={1}>
+                            <Button positive={!muted}
+                                    negative={muted}
+                                    icon={muted ? "volume off" : "volume up"}
+                                    onClick={this.audioMute}/>
+                        </Table.Cell>
+                        <Table.Cell width={1}>
+                            <Button color='blue'
+                                    icon='expand arrows alternate'
+                                    onClick={this.toggleFullScreen}/>
+                        </Table.Cell>
+                    </Table.Row>
+                </Table>
+
+
             </Segment>
 
         );
