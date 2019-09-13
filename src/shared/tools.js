@@ -217,13 +217,12 @@ export const cloneStream = (stream, n) => {
     window["aout"+n] = new Audio();
     window["aout"+n].src = URL.createObjectURL(window["wa"+n].stream);
     window["aout"+n].play();
-    // if(localStorage.outstore) {
-    //     var sinkid = store[n]["sinkid"];
-    //     var sinktext = store[n]["sinktext"];
-    //     window["aout"+n].setSinkId(sinkid).then(function() {
-    //         console.log('Success, audio output device attached: ' + sinkid);
-    //     })
-    // }
+    let device = localStorage.getItem("device" + n);
+    if(device) {
+        window["aout"+n].setSinkId(device)
+            .then(() => Janus.log('Success, audio output device attached: ' + device))
+            .catch((error) => Janus.error(error));
+    }
     window["an"+n] = window["ac"+n].createAnalyser();
     window["ws"+n].connect(window["an"+n]);
     streamVisualizer(window["an"+n], document.getElementById('canvas_'+n),250,n);

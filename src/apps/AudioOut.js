@@ -14,10 +14,26 @@ class AudioOut extends Component {
         audiostream: null,
         datastream: null,
         handles:[
-            {panel: {audios: 15, muted: true, audio_device: null, audiostream: null}},
-            {panel: {audios: 15, muted: true, audio_device: null, audiostream: null}},
-            {panel: {audios: 15, muted: true, audio_device: null, audiostream: null}},
-            {panel: {audios: 15, muted: true, audio_device: null, audiostream: null}}
+            {panel: {audios:
+                        Number(localStorage.getItem("lang0")) || 15,
+                    muted: true,
+                    audio_device: localStorage.getItem("device0") || null,
+                    audiostream: null}},
+            {panel: {audios:
+                        Number(localStorage.getItem("lang1")) || 15,
+                    muted: true,
+                    audio_device: localStorage.getItem("device1") || null,
+                    audiostream: null}},
+            {panel: {audios:
+                        Number(localStorage.getItem("lang2")) || 15,
+                    muted: true,
+                    audio_device: localStorage.getItem("device2") || null,
+                    audiostream: null}},
+            {panel: {audios:
+                        Number(localStorage.getItem("lang3")) || 15,
+                    muted: true,
+                    audio_device: localStorage.getItem("device3") || null,
+                    audiostream: null}}
             ],
         audio: null,
         video: false,
@@ -62,13 +78,9 @@ class AudioOut extends Component {
         Janus.listDevices(devices => {
             if (devices.length > 0) {
                 let audio_devices = devices.filter(device => device.kind === "audiooutput");
-                // Be sure device still exist
-                // let audio_device = localStorage.getItem("audio_device");
-                // let achk = audio_devices.filter(a => a.deviceId === audio_device).length > 0;
-                // let audio_id = audio_device !== "" && achk ? audio_device : audio_devices[0].deviceId;
                 Janus.log(" :: Got Audio output devices: ", audio_devices);
                 this.setState({audio_devices});
-                //this.setDevice(audio_id);
+                this.autoStart();
             } else {
                 //Try to get audio fail reson
                 //testDevices(false, true, steam => {});
@@ -76,6 +88,16 @@ class AudioOut extends Component {
                 this.setState({audio_device: null});
             }
         }, { audio: true, video: false });
+    };
+
+    autoStart = () => {
+        let {handles} = this.state;
+        handles.forEach((h,i) => {
+            let device = localStorage.getItem("device" + i);
+            if(device) {
+                this.audioMute(i);
+            }
+        })
     };
 
     setDevice = (audio_device,i) => {
@@ -86,7 +108,7 @@ class AudioOut extends Component {
                 this.setState({handles});
             }
             if(handles[i].panel.audio_device !== "" && window["aout"+i]) {
-                //localStorage.setItem("audio_device", audio_device);
+                localStorage.setItem("device" + i, audio_device);
                 Janus.log(" :: Going to check Devices: ");
                 //let audio = this.refs.remoteAudio;
                 window["aout"+i].setSinkId(audio_device)
@@ -108,16 +130,17 @@ class AudioOut extends Component {
     };
 
     initAudioStream = (i) => {
-        let {janus,audios} = this.state;
+        let {janus} = this.state;
         janus.attach({
             plugin: "janus.plugin.streaming",
             opaqueId: "audiostream-"+Janus.randomString(12),
             success: (audiostream) => {
                 Janus.log(audiostream);
                 let {handles} = this.state;
+                let id = handles[i].panel.audios;
                 handles[i].panel.audiostream = audiostream;
                 this.setState({handles});
-                audiostream.send({message: {request: "watch", id: audios}});
+                audiostream.send({message: {request: "watch", id}});
                 audiostream.muteAudio()
             },
             error: (error) => {
@@ -147,7 +170,7 @@ class AudioOut extends Component {
                 audio.muted = true;
                 audio.pause();
                 Janus.attachMediaStream(audio, stream);
-                cloneStream(stream, i)
+                cloneStream(stream, i);
             },
             oncleanup: () => {
                 Janus.log("Got a cleanup notification");
@@ -185,6 +208,7 @@ class AudioOut extends Component {
         let {handles} = this.state;
         if(handles[i].panel.audiostream) {
             handles[i].panel.audios = audios;
+            localStorage.setItem("lang" + i, audios);
             this.setState({handles});
             handles[i].panel.audiostream.send({message: {request: "switch", id: audios}});
         }
