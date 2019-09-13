@@ -81,6 +81,46 @@ export const micLevel = (stream, canvas, cb) => {
     }
 };
 
+export const audioLevel = (stream, canvas, cb) => {
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    //let audioContext = null;
+    //let mn = 25/128;
+    let audioContext = new AudioContext();
+    cb(audioContext);
+    let analyser = audioContext.createAnalyser();
+    let microphone = audioContext.createMediaStreamSource(stream);
+    let javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+
+    analyser.smoothingTimeConstant = 0.8;
+    analyser.fftSize = 2048;
+
+    microphone.connect(analyser);
+    analyser.connect(javascriptNode);
+
+    javascriptNode.connect(audioContext.destination);
+
+    let drawContext;
+    let gradient;
+    let width = 250;
+    let mn = width/128;
+
+    drawContext = canvas.getContext('2d');
+    gradient = drawContext.createLinearGradient(0,0,width,10);
+    gradient.addColorStop(0,'green');
+    gradient.addColorStop(0.20,'#80ff00');
+    gradient.addColorStop(0.85,'orange');
+    gradient.addColorStop(1,'red');
+
+
+
+    javascriptNode.onaudioprocess = function() {
+        var average = getBufferAverage(analyser);
+        drawContext.clearRect(0, 0, width, 40);
+        drawContext.fillStyle=gradient;
+        drawContext.fillRect(0,0,average*mn,10);
+    }
+};
+
 export const checkNotification = () => {
     var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
     if ( !iOS && Notification.permission !== "granted") {
