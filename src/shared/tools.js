@@ -261,3 +261,23 @@ export const cloneStream = (stream, n) => {
     source.connect(analyzer);
     streamVisualizer(analyzer, document.getElementById('canvas'+n),250,n);
 };
+
+export const testContext = (cb) => {
+    let mp3 = 'data:audio/mpeg;base64,/+MYxAAAAANIAUAAAASEEB/jwOFM/0MM/90b/+RhST//w4NFwOjf///PZu////9lns5GFDv//l9GlUIEEIAAAgIg8Ir/JGq3/+MYxDsLIj5QMYcoAP0dv9HIjUcH//yYSg+CIbkGP//8w0bLVjUP///3Z0x5QCAv/yLjwtGKTEFNRTMuOTeqqqqqqqqqqqqq/+MYxEkNmdJkUYc4AKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq';
+    let audio = new Audio();
+    audio.src = mp3;
+    audio.play();
+    audio.onplay = () => {
+        let context = new AudioContext();
+        context.state === "running" ? cb(true) : cb (false);
+    };
+};
+
+export const checkAutoPlay = () => {
+    let promise = document.createElement("video").play();
+    if(promise instanceof Promise) {
+        promise.catch(function(error) {
+            console.log("AUTOPLAY ERROR: ", error)
+        }).then(function() {});
+    }
+};

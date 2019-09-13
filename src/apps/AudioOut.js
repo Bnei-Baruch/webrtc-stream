@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Janus } from "../lib/janus";
 import {Segment, Menu, Select, Button, Message} from 'semantic-ui-react';
-import {cloneStream, initJanus} from "../shared/tools";
+import {cloneStream, initJanus, testContext} from "../shared/tools";
 //import VolumeSlider from "../components/VolumeSlider";
 import {audio_options, JANUS_SRV_EURFR} from "../shared/consts";
 import './AdminStreaming.css';
@@ -65,22 +65,13 @@ class AudioOut extends Component {
         }, false);
     };
 
-    checkAutoPlay = () => {
-        let promise = document.createElement("video").play();
-        if(promise instanceof Promise) {
-            promise.catch(function(error) {
-                console.log("AUTOPLAY ERROR: ", error)
-            }).then(function() {});
-        }
-    };
-
     initDevices = () => {
         Janus.listDevices(devices => {
             if (devices.length > 0) {
                 let audio_devices = devices.filter(device => device.kind === "audiooutput");
                 Janus.log(" :: Got Audio output devices: ", audio_devices);
                 this.setState({audio_devices});
-                //this.autoStart();
+                this.autoStart();
             } else {
                 //Try to get audio fail reson
                 //testDevices(false, true, steam => {});
@@ -91,13 +82,17 @@ class AudioOut extends Component {
     };
 
     autoStart = () => {
-        let {handles} = this.state;
-        handles.forEach((h,i) => {
-            let device = localStorage.getItem("device" + i);
-            if(device) {
-                this.audioMute(i);
+        testContext(result => {
+            if(result) {
+                let {handles} = this.state;
+                handles.forEach((h,i) => {
+                    let device = localStorage.getItem("device" + i);
+                    if(device) {
+                        this.audioMute(i);
+                    }
+                })
             }
-        })
+        });
     };
 
     setDevice = (audio_device,i) => {
