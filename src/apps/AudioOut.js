@@ -80,7 +80,7 @@ class AudioOut extends Component {
                 let audio_devices = devices.filter(device => device.kind === "audiooutput");
                 Janus.log(" :: Got Audio output devices: ", audio_devices);
                 this.setState({audio_devices});
-                this.autoStart();
+                //this.autoStart();
             } else {
                 //Try to get audio fail reson
                 //testDevices(false, true, steam => {});
@@ -107,11 +107,11 @@ class AudioOut extends Component {
                 handles[i].panel.audio_device = audio_device;
                 this.setState({handles});
             }
-            if(handles[i].panel.audio_device !== "" && window["aout"+i]) {
+            if(handles[i].panel.audio_device !== "" && window["out"+i]) {
                 localStorage.setItem("device" + i, audio_device);
                 Janus.log(" :: Going to check Devices: ");
                 //let audio = this.refs.remoteAudio;
-                window["aout"+i].setSinkId(audio_device)
+                window["out"+i].setSinkId(audio_device)
                     .then(() => Janus.log('Success, audio output device attached: ' + audio_device))
                     .catch((error) => Janus.error(error));
                 // getDevicesStream(audio_device,stream => {
@@ -170,7 +170,10 @@ class AudioOut extends Component {
                 audio.muted = true;
                 audio.pause();
                 Janus.attachMediaStream(audio, stream);
+                // This make multiple audio stream out throw separate output devices
                 cloneStream(stream, i);
+                //let canvas = this.refs["canvas" + i];
+                //audioLevel(stream, canvas, 250);
             },
             oncleanup: () => {
                 Janus.log("Got a cleanup notification");
@@ -274,7 +277,7 @@ class AudioOut extends Component {
                           </Menu.Item>
                       </Menu>
                       <Message className='vu'>
-                          <canvas id={"canvas_" + i} width="250" height="10" />
+                          <canvas ref={"canvas" + i} id={"canvas" + i} width="250" height="10" />
                       </Message>
                       {/*<VolumeSlider volume={() => this.setVolume(i)} />*/}
                   </Segment>

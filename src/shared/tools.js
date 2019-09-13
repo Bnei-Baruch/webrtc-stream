@@ -81,12 +81,9 @@ export const micLevel = (stream, canvas, cb) => {
     }
 };
 
-export const audioLevel = (stream, canvas, cb) => {
+export const audioLevel = (stream, canvas, width) => {
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
-    //let audioContext = null;
-    //let mn = 25/128;
     let audioContext = new AudioContext();
-    cb(audioContext);
     let analyser = audioContext.createAnalyser();
     let microphone = audioContext.createMediaStreamSource(stream);
     let javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
@@ -101,7 +98,6 @@ export const audioLevel = (stream, canvas, cb) => {
 
     let drawContext;
     let gradient;
-    let width = 250;
     let mn = width/128;
 
     drawContext = canvas.getContext('2d');
@@ -114,7 +110,7 @@ export const audioLevel = (stream, canvas, cb) => {
 
 
     javascriptNode.onaudioprocess = function() {
-        var average = getBufferAverage(analyser);
+        let average = getBufferAverage(analyser);
         drawContext.clearRect(0, 0, width, 40);
         drawContext.fillStyle=gradient;
         drawContext.fillRect(0,0,average*mn,10);
@@ -247,26 +243,21 @@ const streamVisualizer = (analyser, canvas, width, n) => {
 }
 
 export const cloneStream = (stream, n) => {
-    console.log(" --::-- clone called: ",stream,n);
-    window["a"+n] = stream;
-    window["ac"+n] = new AudioContext();
-    window["ac"+n].createMediaStreamSource(window.window["a"+n]);
-    window["ws"+n] = window["ac"+n].createMediaStreamSource(window.window["a"+n]);
-    window["wa"+n] = window["ac"+n].createMediaStreamDestination();
-    window["ws"+n].connect(window["wa"+n]);
-    window["aout"+n] = new Audio();
-    window["aout"+n].src = URL.createObjectURL(window["wa"+n].stream);
-    window["aout"+n].play();
+    let context = new AudioContext();
+    context.createMediaStreamSource(stream);
+    let source = context.createMediaStreamSource(stream);
+    let destination = context.createMediaStreamDestination();
+    source.connect(destination);
+    window["out"+n] = new Audio();
+    window["out"+n].srcObject = destination.stream;
+    window["out"+n].play();
     let device = localStorage.getItem("device" + n);
     if(device) {
-        window["aout"+n].setSinkId(device)
+        window["out"+n].setSinkId(device)
             .then(() => Janus.log('Success, audio output device attached: ' + device))
             .catch((error) => Janus.error(error));
     }
-    window["an"+n] = window["ac"+n].createAnalyser();
-    window["ws"+n].connect(window["an"+n]);
-    streamVisualizer(window["an"+n], document.getElementById('canvas_'+n),250,n);
-    //var streamVisualizer2 = new streamVisualizer(window["an"+n], document.getElementById('canvas_'+n),250);
-    //freqs = new Uint8Array(analyser.frequencyBinCount);
-    //times = new Uint8Array(analyser.frequencyBinCount);
-}
+    let analyzer = context.createAnalyser();
+    source.connect(analyzer);
+    streamVisualizer(analyzer, document.getElementById('canvas'+n),250,n);
+};
