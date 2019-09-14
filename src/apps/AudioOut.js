@@ -254,7 +254,7 @@ class AudioOut extends Component {
                           </Menu.Item>
                           <Menu.Item>
                               <Select
-
+                                  className='lang_dropdown'
                                   error={!handles[i].panel.audios}
                                   placeholder="Audio:"
                                   value={handles[i].panel.audios}

@@ -26,6 +26,10 @@ video {
     /*min-width: 470px;*/
 }
 
+.ui.dropdown .menu>.disabled.item {
+    opacity: .99!important;
+}
+
 .ingest_segment > .menu,
 .ingest_segment >.input {
     margin: .2rem .5rem !important;

@@ -244,7 +244,6 @@ const streamVisualizer = (analyser, canvas, width, n) => {
 
 export const cloneStream = (stream, n) => {
     let context = new AudioContext();
-    context.createMediaStreamSource(stream);
     let source = context.createMediaStreamSource(stream);
     let destination = context.createMediaStreamDestination();
     source.connect(destination);
