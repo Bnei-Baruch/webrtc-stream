@@ -187,6 +187,18 @@ export const audiog_options = [
     { key: 'heen', value: 17, text: 'Heb-Eng' },
 ];
 
+export const dual_options = [
+    { key: 101, value: 101, text: 'Custom', disabled: true, icon: "tags", selected: true},
+    { key: 2, value: 22, text: 'Chi-Jpn' },
+    { key: 3, value: 19, text: 'Ukr-Rom' },
+    { key: 4, value: 20, text: 'Bul-Lit' },
+    { key: 6, value: 21, text: 'Geo-Hun' },
+    { key: 99, value: 99, text: 'Special', disabled: true, icon: "tags", selected: true},
+    { key: 'heru', value: 10, text: 'Heb-Rus' },
+    { key: 'heen', value: 17, text: 'Heb-Eng' },
+];
+
+
 export const gxycol = [0, 201, 203, 202, 204];
 
 export const trllang = {

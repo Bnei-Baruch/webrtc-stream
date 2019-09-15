@@ -95,6 +95,11 @@ video {
     padding: 0.1em 0.5em!important;
 }
 
+.canvas_vu {
+    position: relative;
+    top: 2.5px;
+}
+
 .timer {
     font-size: 3em!important;
     padding: 0.0em 0.2em!important;

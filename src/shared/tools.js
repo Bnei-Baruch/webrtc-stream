@@ -219,30 +219,48 @@ function getAverageVolume(array) {
 var p = {};
 
 const streamVisualizer = (analyser, canvas, width, n) => {
-    //var canvas;
-    //var canvasctx;
-    var drawContext;
-    var gradient;
-    var mn = width/128;
+    let mn = width/128;
 
-    drawContext = canvas.getContext('2d');
-    gradient = drawContext.createLinearGradient(0,0,width,10);
+    let drawContext = canvas.getContext('2d');
+    let gradient = drawContext.createLinearGradient(0,0,width,10);
     gradient.addColorStop(0,'green');
     gradient.addColorStop(0.20,'#80ff00');
     gradient.addColorStop(0.85,'orange');
     gradient.addColorStop(1,'red');
 
-    var sampleAudioStream = function() {
-        var average = getBufferAverage(analyser);
+    let sampleAudioStream = () => {
+        let average = getBufferAverage(analyser);
         drawContext.clearRect(0, 0, width, 40);
         drawContext.fillStyle=gradient;
         drawContext.fillRect(0,0,average*mn,10);
     };
 
     p[n] = setInterval(sampleAudioStream, 50);
-}
+};
 
-export const cloneStream = (stream, n) => {
+const stereoVisualizer = (analyser1, analyser2, canvas, width, n) => {
+    let mn = width/128;
+
+    let drawContext = canvas.getContext('2d');
+    let gradient = drawContext.createLinearGradient(0,0,width,10);
+    gradient.addColorStop(0,'green');
+    gradient.addColorStop(0.20,'#80ff00');
+    gradient.addColorStop(0.85,'orange');
+    gradient.addColorStop(1,'red');
+
+    let sampleAudioStream = () => {
+        let average1 = getBufferAverage(analyser1);
+        let average2 = getBufferAverage(analyser2);
+        drawContext.clearRect(0, 0, width, 40);
+        drawContext.fillStyle=gradient;
+        drawContext.fillRect(0,0,average1*mn,10);
+        drawContext.fillRect(0,15, average2*mn,10);
+    };
+
+    p[n] = setInterval(sampleAudioStream, 50);
+};
+
+export const cloneStream = (stream, n, stereo) => {
     let context = new AudioContext();
     let source = context.createMediaStreamSource(stream);
     let destination = context.createMediaStreamDestination();
@@ -256,9 +274,19 @@ export const cloneStream = (stream, n) => {
             .then(() => Janus.log('Success, audio output device attached: ' + device))
             .catch((error) => Janus.error(error));
     }
-    let analyzer = context.createAnalyser();
-    source.connect(analyzer);
-    streamVisualizer(analyzer, document.getElementById('canvas'+n),250,n);
+    if(stereo) {
+        let analyser1 = context.createAnalyser();
+        let analyser2 = context.createAnalyser();
+        let splitter = context.createChannelSplitter(2);
+        source.connect(splitter);
+        splitter.connect(analyser1,0,0);
+        splitter.connect(analyser2,1,0);
+        stereoVisualizer(analyser1, analyser2, document.getElementById('canvas'+n),250,n);
+    } else {
+        let analyzer = context.createAnalyser();
+        source.connect(analyzer);
+        streamVisualizer(analyzer, document.getElementById('canvas'+n),250,n);
+    }
 };
 
 export const testContext = (cb) => {
