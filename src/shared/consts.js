@@ -96,6 +96,36 @@ export const audios_options = [
     { key: 204, value: 204, text: 'Galaxy5' },
 ];
 
+export const dual_languages = [
+    { key: 'he', value: "heb", flag: 'il', text: 'Hebrew' },
+    { key: 'ru', value: "rus", flag: 'ru', text: 'Russian' },
+    { key: 'en', value: "eng", flag: 'us', text: 'English' },
+    { key: 'es', value: "spa", flag: 'es', text: 'Spanish' },
+    { key: 'fr', value: "fre", flag: 'fr', text: 'French' },
+    { key: 'it', value: "ita", flag: 'it', text: 'Italian' },
+    { key: 'de', value: "ger", flag: 'de', text: 'German' },
+    { key: 'tr', value: "trk", flag: 'tr', text: 'Turkish' },
+    { key: 'pt', value: "por", flag: 'pt', text: 'Portuguese' },
+    { key: 'bg', value: "bul", flag: 'bg', text: 'Bulgarian' },
+    { key: 'ka', value: "geo", flag: 'ge', text: 'Georgian' },
+    { key: 'ro', value: "rom", flag: 'ro', text: 'Romanian' },
+    { key: 'hu', value: "hun", flag: 'hu', text: 'Hungarian' },
+    { key: 'sv', value: "swe", flag: 'se', text: 'Swedish' },
+    { key: 'lt', value: "lit", flag: 'lt', text: 'Lithuanian' },
+    { key: 'hr', value: "cro", flag: 'hr', text: 'Croatian' },
+    { key: 'ja', value: "jpn", flag: 'jp', text: 'Japanese' },
+    { key: 'sl', value: "slo", flag: 'si', text: 'Slovenian' },
+    { key: 'pl', value: "pol", flag: 'pl', text: 'Polish' },
+    { key: 'no', value: "nor", flag: 'no', text: 'Norwegian' },
+    { key: 'lv', value: "lat", flag: 'lv', text: 'Latvian' },
+    { key: 'ua', value: "ukr", flag: 'ua', text: 'Ukrainian' },
+    { key: 'nl', value: "dut", flag: 'nl', text: 'Dutch' },
+    { key: 'cn', value: "chn", flag: 'cn', text: 'Chinese' },
+    { key: 'et', value: "amn", flag: 'et', text: 'Amharic' },
+    { key: 'in', value: "hin", flag: 'in', text: 'Hindi' },
+    { key: 'ir', value: "per", flag: 'ir', text: 'Persian' },
+];
+
 export const audio_options = [
     { key: 101, value: 101, text: '', disabled: true, icon: "tags", label: "Workshop"},
     { key: 2, value: 2, text: 'Hebrew' },
@@ -186,18 +216,6 @@ export const audiog_options = [
     { key: 'heru', value: 10, text: 'Heb-Rus' },
     { key: 'heen', value: 17, text: 'Heb-Eng' },
 ];
-
-export const dual_options = [
-    { key: 101, value: 101, text: 'Custom', disabled: true, icon: "tags", selected: true},
-    { key: 2, value: 22, text: 'Chi-Jpn' },
-    { key: 3, value: 19, text: 'Ukr-Rom' },
-    { key: 4, value: 20, text: 'Bul-Lit' },
-    { key: 6, value: 21, text: 'Geo-Hun' },
-    { key: 99, value: 99, text: 'Special', disabled: true, icon: "tags", selected: true},
-    { key: 'heru', value: 10, text: 'Heb-Rus' },
-    { key: 'heen', value: 17, text: 'Heb-Eng' },
-];
-
 
 export const gxycol = [0, 201, 203, 202, 204];
 

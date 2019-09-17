@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Janus } from "../lib/janus";
-import {Segment, Menu, Select, Button, Message} from 'semantic-ui-react';
-import {cloneStream, initJanus, testContext} from "../shared/tools";
-//import VolumeSlider from "../components/VolumeSlider";
-import {dual_options, JANUS_SRV_EURFR} from "../shared/consts";
+import {Segment, Menu, Select, Label, Message, Modal, Button} from 'semantic-ui-react';
+import {cloneStream, getState, initJanus, testContext} from "../shared/tools";
+import {JANUS_SRV_EURFR} from "../shared/consts";
 import './AdminStreaming.css';
+import DualSettings from "./DualSettings";
+//import VolumeSlider from "../components/VolumeSlider";
 
 class DualOut extends Component {
 
@@ -15,22 +16,22 @@ class DualOut extends Component {
         datastream: null,
         handles:[
             {panel: {audios:
-                        Number(localStorage.getItem("lang0")) || 15,
+                        Number(localStorage.getItem("lang0")) || 22,
                     muted: true,
                     audio_device: localStorage.getItem("device0") || null,
                     audiostream: null}},
             {panel: {audios:
-                        Number(localStorage.getItem("lang1")) || 15,
+                        Number(localStorage.getItem("lang1")) || 19,
                     muted: true,
                     audio_device: localStorage.getItem("device1") || null,
                     audiostream: null}},
             {panel: {audios:
-                        Number(localStorage.getItem("lang2")) || 15,
+                        Number(localStorage.getItem("lang2")) || 20,
                     muted: true,
                     audio_device: localStorage.getItem("device2") || null,
                     audiostream: null}},
             {panel: {audios:
-                        Number(localStorage.getItem("lang3")) || 15,
+                        Number(localStorage.getItem("lang3")) || 21,
                     muted: true,
                     audio_device: localStorage.getItem("device3") || null,
                     audiostream: null}}
@@ -43,10 +44,20 @@ class DualOut extends Component {
         muted: true,
         started: false,
         audio_devices: [],
+        dual: {
+            d1: { left: "", right: ""},
+            d2: { left: "", right: ""},
+            d3: { left: "", right: ""},
+            d4: { left: "", right: ""}
+        }
     };
 
     componentDidMount() {
-        this.initApp();
+        getState(`webrtc/dual`, (dual) => {
+            console.log("Got state: ", dual);
+            this.setState({dual});
+            this.initApp();
+        });
     };
 
     componentWillUnmount() {
@@ -230,10 +241,26 @@ class DualOut extends Component {
         }
     };
 
+    modalClose = () => {
+        getState(`webrtc/dual`, (dual) => {
+            console.log("Got state: ", dual);
+            this.setState({dual});
+        });
+    };
+
 
   render() {
 
-      const {audio_devices, handles} = this.state;
+      const {audio_devices, handles, dual} = this.state;
+
+      const dual_options = [
+          { key: 2, value: 22, text: dual.d1.left + "-" + dual.d1.right },
+          { key: 3, value: 19, text: dual.d2.left + "-" + dual.d1.right },
+          { key: 4, value: 20, text: dual.d3.left + "-" + dual.d1.right },
+          { key: 6, value: 21, text: dual.d4.left + "-" + dual.d1.right },
+          { key: 'heru', value: 10, text: 'heb-rus' },
+          { key: 'heen', value: 17, text: 'heb-eng' },
+      ];
 
       let adevices_list = audio_devices.map((device,i) => {
           const {label, deviceId} = device;
@@ -255,6 +282,7 @@ class DualOut extends Component {
                           <Menu.Item>
                               <Select
                                   className='lang_dropdown'
+                                  compact
                                   error={!handles[i].panel.audios}
                                   placeholder="Audio:"
                                   value={handles[i].panel.audios}
@@ -289,7 +317,10 @@ class DualOut extends Component {
 
     return (
 
-      <Segment compact>
+      <Segment compact >
+          <Modal trigger={<Label as='a' color='grey' corner='right' icon='settings' />} onClose={this.modalClose} >
+              <DualSettings dual={dual} />
+          </Modal>
           {audio_panels}
       </Segment>
     );
