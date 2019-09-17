@@ -5,7 +5,8 @@ import {
     STUN_SRV_MKZ,
     STUN_SRV_GXY,
     WFDB_STATE,
-    WFRP_STATE
+    WFRP_STATE,
+    ENC_URL
 } from "./consts";
 
 
@@ -158,6 +159,18 @@ export const testDevices = (video,audio,cb) => {
         Janus.log(message);
     });
 };
+
+export const streamFetcher = (data, cb) => fetch(`${ENC_URL}`, {
+    method: 'PUT',
+    headers: {'Content-Type': 'application/json'},
+    body:  JSON.stringify(data)
+})
+    .then((response) => {
+        if (response.ok) {
+            return response.json().then(respond => cb(respond));
+        }
+    })
+    .catch(ex => console.log("Put Data error:", ex));
 
 export const getState = (path, cb) => fetch(`${WFRP_STATE}/${path}`)
     .then((response) => {
