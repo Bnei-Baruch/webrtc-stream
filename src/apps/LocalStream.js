@@ -35,7 +35,7 @@ class LocalStream extends Component {
                 let ulpan = id === 511 ? "Ulpan - 1" : "Ulpan - 2";
                 let audios = id === 511 ? 512 : 522;
                 this.setState({ulpan, audios, janus: this.props.janus} , () => {
-                    this.initVideoStream(511);
+                    this.initVideoStream(id);
                 });
             }, 1000);
         } else {
