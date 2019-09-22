@@ -4,8 +4,8 @@ import {
     JANUS_SRV_EURFR,
     STUN_SRV_MKZ,
     STUN_SRV_GXY,
-    WFDB_STATE,
-    WFRP_STATE,
+    JSDB_STATE,
+    JSRP_STATE,
     ENC_URL
 } from "./consts";
 
@@ -172,7 +172,7 @@ export const streamFetcher = (data, cb) => fetch(`${ENC_URL}`, {
     })
     .catch(ex => console.log("Put Data error:", ex));
 
-export const getState = (path, cb) => fetch(`${WFRP_STATE}/${path}`)
+export const getState = (path, cb) => fetch(`${JSRP_STATE}/${path}`)
     .then((response) => {
         if (response.ok) {
             return response.json().then(data => cb(data));
@@ -183,7 +183,7 @@ export const getState = (path, cb) => fetch(`${WFRP_STATE}/${path}`)
     })
     .catch(ex => Janus.log(`get ${path}`, ex));
 
-export const putData = (path, data, cb) => fetch(`${WFDB_STATE}/${path}`, {
+export const putData = (path, data, cb) => fetch(`${JSDB_STATE}/${path}`, {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
     body:  JSON.stringify(data)
