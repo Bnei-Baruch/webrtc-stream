@@ -228,7 +228,7 @@ class LocalStream extends Component {
             <Segment textAlign='center' className="ingest_segment" raised secondary>
                 <Menu secondary size='huge'>
                     <Menu.Item>
-                        <Label as='a' onClick={() => window.open(`${url}`, "_blank")} size='massive'>
+                        <Label as='a' onClick={() => window.open(`${url}`, "_self")} size='massive'>
                             {ulpan}
                         </Label>
                     </Menu.Item>
