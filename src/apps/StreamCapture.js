@@ -21,7 +21,7 @@ class StreamCapture extends Component {
     };
 
     componentDidMount() {
-        //this.captureStatus();
+        this.captureStatus();
         this.initApp(this.props.id);
     };
 
@@ -32,8 +32,8 @@ class StreamCapture extends Component {
     initApp = () => {
         initJanus(janus => {
             this.setState({janus});
-            this.initVideoStream(1);
-            this.initAudioStream(2);
+            this.initVideoStream(70);
+            this.initAudioStream(71);
         }, er => {
             setTimeout(() => {
                 this.initApp();
@@ -169,13 +169,11 @@ class StreamCapture extends Component {
         if(this.state.ival)
             clearInterval(this.state.ival);
         let ival = setInterval(() => {
-            const {capture} = this.state;
             let req = {"req": "progress", "id": "stream"};
-            streamFetcher(capture.ip, `capture`, req, (data) => {
-                let progress = data.jsonst;
-                let captimer = progress.out_time ? progress.out_time.split(".")[0] : "";
-                //console.log(":: Got Capture progress: ", progress);
-                this.setState({captimer});
+            streamFetcher(req, (data) => {
+                let timer = data.stdout ? data.stdout.split(".")[0] : "00:00:00";
+                //console.log(":: Got Capture progress: ", data);
+                this.setState({timer});
             });
         }, 1000);
         this.setState({ival});
@@ -184,21 +182,23 @@ class StreamCapture extends Component {
     captureStatus = () => {
         let req = {req: "strstat", id: "status"};
         streamFetcher(req,  (data) => {
-            let status = data.stdout.replace(/\n/ig, '');
-            console.log(":: Got Encoder status: ",status);
-            this.setState({status});
+            let status = data.jsonst.capture;
+            console.log(":: Got Capture status: ",status);
+            this.setState({status: status});
+            status === "On" ? this.runTimer() : clearInterval(this.state.ival);
         });
     };
 
     encoderExec = () => {
         this.setState({disabled: true, loading: true});
-        setTimeout(() => this.setState({disabled: false, loading: false}), 2000);
+        setTimeout(() => this.setState({disabled: false, loading: false}), 5000);
         let {status} = this.state;
-        let req = {id:"dual", req: status === "On" ? "stop" : "start"};
+        let req = {id: "stream", req: status === "On" ? "stop" : "start"};
         streamFetcher(req,  (data) => {
             console.log(":: Start Encoder status: ",data);
             status = status === "On" ? "Off" : "On";
             this.setState({status});
+            status === "On" ? this.runTimer() : clearInterval(this.state.ival);
         });
     };
 
