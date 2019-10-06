@@ -29,7 +29,7 @@ export const initJanus = (cb,er,lcl) => {
                     Janus.log(" :: Janus destroyed -- reconnect after 10 sec :: ");
                     setTimeout(() => {
                         window.location.reload();
-                    }, 100000);
+                    }, 10000);
                 }
             });
         }

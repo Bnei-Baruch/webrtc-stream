@@ -17,13 +17,18 @@ video {
     display: flex;
     flex-direction: column;
 }
-.ingest_segment{
+
+.ingest_segment {
     display: flex;
     align-items: center;
     padding: .8rem .5rem;
     flex-wrap:wrap;
     max-width: 700px;
     /*min-width: 470px;*/
+}
+
+.stream_segment {
+    max-width: 600px;
 }
 
 .ui.dropdown .menu>.disabled.item {

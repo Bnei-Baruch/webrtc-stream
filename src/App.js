@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import CroomStream from "./apps/CroomStream";
+// import CroomStream from "./apps/CroomStream";
+import StreamCapture from "./apps/StreamCapture";
 // import DualOut from "./apps/DualOut";
 // import CaptureMonitor from "./apps/CaptureMonitor";
 // import LocalStream from "./apps/LocalStream";
@@ -19,7 +20,8 @@ class App extends Component {
            {/*<CaptureMonitor />*/}
            {/*<LocalStream />*/}
            {/*<IngestMonitor />*/}
-           <CroomStream />
+           {/*<CroomStream />*/}
+           <StreamCapture />
         </Fragment>
     );
   }
