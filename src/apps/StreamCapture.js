@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { Janus } from "../lib/janus";
 import {Segment, Button, Table, Message, Header} from 'semantic-ui-react';
 import './AdminStreaming.css';
-import {initJanus,audioLevel} from "../shared/tools";
+import {initJanus,audioLevel,streamFetcher} from "../shared/tools";
 
 class StreamCapture extends Component {
 
     state = {
+        disabled: false,
+        loading: false,
         janus: null,
         videostream: null,
         audiostream: null,
@@ -19,6 +21,7 @@ class StreamCapture extends Component {
     };
 
     componentDidMount() {
+        //this.captureStatus();
         this.initApp(this.props.id);
     };
 
@@ -162,9 +165,46 @@ class StreamCapture extends Component {
         }
     };
 
+    runTimer = () => {
+        if(this.state.ival)
+            clearInterval(this.state.ival);
+        let ival = setInterval(() => {
+            const {capture} = this.state;
+            let req = {"req": "progress", "id": "stream"};
+            streamFetcher(capture.ip, `capture`, req, (data) => {
+                let progress = data.jsonst;
+                let captimer = progress.out_time ? progress.out_time.split(".")[0] : "";
+                //console.log(":: Got Capture progress: ", progress);
+                this.setState({captimer});
+            });
+        }, 1000);
+        this.setState({ival});
+    };
+
+    captureStatus = () => {
+        let req = {req: "strstat", id: "status"};
+        streamFetcher(req,  (data) => {
+            let status = data.stdout.replace(/\n/ig, '');
+            console.log(":: Got Encoder status: ",status);
+            this.setState({status});
+        });
+    };
+
+    encoderExec = () => {
+        this.setState({disabled: true, loading: true});
+        setTimeout(() => this.setState({disabled: false, loading: false}), 2000);
+        let {status} = this.state;
+        let req = {id:"dual", req: status === "On" ? "stop" : "start"};
+        streamFetcher(req,  (data) => {
+            console.log(":: Start Encoder status: ",data);
+            status = status === "On" ? "Off" : "On";
+            this.setState({status});
+        });
+    };
+
 
     render() {
-        const {muted,status,timer} = this.state;
+        const {muted,status,timer,disabled,loading} = this.state;
 
         return (
 
@@ -195,7 +235,7 @@ class StreamCapture extends Component {
 
                 <Table basic='very' fixed unstackable>
                     <Table.Row>
-                        <Table.Cell colSpan='2'>
+                        <Table.Cell>
                             <Message className='vu'>
                                 <canvas ref={"canvas"} id={"canvas"} width="250" height="10" />
                             </Message>
@@ -203,13 +243,13 @@ class StreamCapture extends Component {
                     </Table.Row>
                     <Table.Row>
                         <Table.Cell>
-                            <Button positive fluid >
-                                Start
-                            </Button>
-                        </Table.Cell>
-                        <Table.Cell>
-                            <Button negative fluid >
-                                Stop
+                            <Button fluid size='huge'
+                                    disabled={disabled}
+                                    loading={loading}
+                                    positive={status === "Off"}
+                                    negative={status === "On"}
+                                    onClick={this.encoderExec} >
+                                {status === "On" ? "Stop Record" : "Start Record"}
                             </Button>
                         </Table.Cell>
                     </Table.Row>
