@@ -34,6 +34,11 @@ class DualOut extends Component {
                         Number(localStorage.getItem("lang3")) || 21,
                     muted: true,
                     audio_device: localStorage.getItem("device3") || null,
+                    audiostream: null}},
+            {panel: {audios:
+                        Number(localStorage.getItem("lang4")) || 18,
+                    muted: true,
+                    audio_device: localStorage.getItem("device4") || null,
                     audiostream: null}}
             ],
         audio: null,
@@ -48,7 +53,8 @@ class DualOut extends Component {
             d1: { left: "", right: ""},
             d2: { left: "", right: ""},
             d3: { left: "", right: ""},
-            d4: { left: "", right: ""}
+            d4: { left: "", right: ""},
+            d5: { left: "", right: ""}
         }
     };
 
@@ -255,9 +261,10 @@ class DualOut extends Component {
 
       const dual_options = [
           { key: 2, value: 22, text: dual.d1.left + "-" + dual.d1.right },
-          { key: 3, value: 19, text: dual.d2.left + "-" + dual.d1.right },
-          { key: 4, value: 20, text: dual.d3.left + "-" + dual.d1.right },
-          { key: 6, value: 21, text: dual.d4.left + "-" + dual.d1.right },
+          { key: 3, value: 19, text: dual.d2.left + "-" + dual.d2.right },
+          { key: 4, value: 20, text: dual.d3.left + "-" + dual.d3.right },
+          { key: 5, value: 21, text: dual.d4.left + "-" + dual.d4.right },
+          { key: 6, value: 18, text: dual.d5.left + "-" + dual.d5.right },
           { key: 'heru', value: 10, text: 'heb-rus' },
           { key: 'heen', value: 17, text: 'heb-eng' },
       ];
