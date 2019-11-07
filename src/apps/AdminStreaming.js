@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Janus } from "../lib/janus";
 import { Segment, Menu, Select, Button, Grid } from 'semantic-ui-react';
 import VolumeSlider from "../components/VolumeSlider";
-import {admin_videos_options, audios_options, JANUS_SRV_EURFR} from "../shared/consts";
+import {servers_options, admin_videos_options, audio_options, JANUS_STR_SRV_GR} from "../shared/consts";
 import './AdminStreaming.css';
 
 class AdminStreaming extends Component {
@@ -14,7 +14,7 @@ class AdminStreaming extends Component {
         datastream: null,
         audio: null,
         video: false,
-        servers: `${JANUS_SRV_EURFR}`,
+        servers: `${JANUS_STR_SRV_GR}`,
         videos: 1,
         audios: 15,
         muted: true,
@@ -50,7 +50,7 @@ class AdminStreaming extends Component {
             success: () => {
                 Janus.log(" :: Connected to JANUS");
                 this.setState({started: true});
-                //this.initDataStream();
+                this.initDataStream();
             },
             error: (error) => {
                 Janus.log(error);
@@ -211,7 +211,13 @@ class AdminStreaming extends Component {
 
     setServer = (servers) => {
         Janus.log(servers);
-        this.setState({servers});
+        if(this.state.videostream ) {
+            this.state.videostream.hangup();
+        }
+        if(this.state.audiostream) {
+            this.state.audiostream.hangup();
+        }
+        this.setState({servers, video: false, videostream: null, video_stream: null, audiostream: null, audio_stream: null, muted: true});
         this.initJanus(servers);
     };
 
@@ -272,12 +278,12 @@ class AdminStreaming extends Component {
           <Segment textAlign='center' className="ingest_segment" raised secondary>
               <Menu secondary size='huge'>
                   <Menu.Item>
-                      {/*<Select*/}
-                      {/*    error={!servers}*/}
-                      {/*    placeholder="Server:"*/}
-                      {/*    value={servers}*/}
-                      {/*    options={servers_options}*/}
-                      {/*    onChange={(e, {value}) => this.setServer(value)} />*/}
+                      <Select compact
+                          error={!servers}
+                          placeholder="Server:"
+                          value={servers}
+                          options={servers_options}
+                          onChange={(e, {value}) => this.setServer(value)} />
                       <Button positive={video} negative={!video} size='huge'
                               icon={video ? "eye" : "eye slash"}
                               onClick={this.videoMute} />
@@ -293,14 +299,12 @@ class AdminStreaming extends Component {
                   </Menu.Item>
                   <Menu.Item>
                       <Select
-                          compact={false}
+                          compact={true}
                           error={!audios}
                           placeholder="Audio:"
                           value={audios}
-                          options={audios_options}
+                          options={audio_options}
                           onChange={(e,{value}) => this.setAudio(value)} />
-                  </Menu.Item>
-                  <Menu.Item>
                       <Button positive={!muted} size='huge'
                               negative={muted}
                               icon={muted ? "volume off" : "volume up"}
@@ -313,8 +317,8 @@ class AdminStreaming extends Component {
           { !video ? '' :
           <video ref="remoteVideo"
                  id="remoteVideo"
-                 width="100%"
-                 height="100%"
+                 width="640"
+                 height="360"
                  autoPlay={true}
                  controls={false}
                  muted={true}

@@ -14,25 +14,23 @@ export const JANUS_SRV_VRT = process.env.REACT_APP_JANUS_SRV_VRT;
 export const JANUS_SRV_GXY = process.env.REACT_APP_JANUS_SRV_GXY;
 export const JANUS_ADMIN_VRT = process.env.REACT_APP_ADMIN_SRV_VRT;
 export const JANUS_ADMIN_GXY = process.env.REACT_APP_ADMIN_SRV_GXY;
-export const JANUS_SRV_ISRPT = process.env.REACT_APP_JANUS_SRV_ISRPT;
-export const JANUS_SRV_EURND = process.env.REACT_APP_JANUS_SRV_EURND;
-export const JANUS_SRV_EURUK = process.env.REACT_APP_JANUS_SRV_EURUK;
-export const JANUS_SRV_EURFR = process.env.REACT_APP_JANUS_SRV_EURFR;
-export const JANUS_SRV_ISRLC = process.env.REACT_APP_JANUS_SRV_ISRLC;
-export const JANUS_SRV_MKZLC = process.env.REACT_APP_JANUS_SRV_MKZLC;
+export const JANUS_STR_SRV_IL = process.env.REACT_APP_JANUS_STR_SRV_IL;
+export const JANUS_STR_SRV_UK = process.env.REACT_APP_JANUS_STR_SRV_UK;
+export const JANUS_STR_SRV_GR = process.env.REACT_APP_JANUS_STR_SRV_GR;
+export const JANUS_STR_SRV_BB = process.env.REACT_APP_JANUS_STR_SRV_BB;
 export const JANUS_IP_ISRPT = process.env.REACT_APP_JANUS_IP_ISRPT;
 export const JANUS_IP_EURND = process.env.REACT_APP_JANUS_IP_EURND;
 export const JANUS_IP_EURUK = process.env.REACT_APP_JANUS_IP_EURUK;
 export const JANUS_IP_EURFR = process.env.REACT_APP_JANUS_IP_EURFR;
 export const ENC_URL = process.env.REACT_APP_ENC_URL;
+export const JANUS_SRV_EURFR = "";
 
 
 export const servers_options = [
-    { key: 1, text: 'Israel (PT)', value: `${JANUS_SRV_ISRPT}` },
-    { key: 2, text: 'Europe (ND)', value: `${JANUS_SRV_EURND}` },
-    { key: 3, text: 'Europe (UK)', value: `${JANUS_SRV_EURUK}` },
-    { key: 4, text: 'Europe (FR)', value: `${JANUS_SRV_EURFR}` },
-    { key: 5, text: 'Merkaz (PT)', value: `${JANUS_SRV_ISRLC}` },
+    { key: 1, text: 'Europe (UK)', value: `${JANUS_STR_SRV_UK}` },
+    { key: 2, text: 'Europe (GR)', value: `${JANUS_STR_SRV_GR}` },
+    { key: 3, text: 'Israel (PT)', value: `${JANUS_STR_SRV_IL}` },
+    { key: 4, text: 'Merkaz (PT)', value: `${JANUS_STR_SRV_BB}` },
 ];
 
 export const videos_options = [
@@ -52,7 +50,7 @@ export const admin_videos_options = [
 ];
 
 export const audios_options = [
-    { key: 100, value: 100, text: 'Focus Group', disabled: true, icon: "tags" },
+    { key: 100, value: 100, text: 'Source', disabled: true, icon: "tags" },
     { key: 'he', value: 15, flag: 'il', text: 'Hebrew' },
     { key: 'ru', value: 23, flag: 'ru', text: 'Russian' },
     { key: 'en', value: 24, flag: 'us', text: 'English' },
@@ -80,7 +78,7 @@ export const audios_options = [
     { key: 'et', value: 58, flag: 'et', text: 'Amharic' },
     { key: 'in', value: 59, flag: 'in', text: 'Hindi' },
     { key: 'ir', value: 60, flag: 'ir', text: 'Persian' },
-    { key: 101, value: 101, text: 'W/O Focus Group', disabled: true, icon: "tags"},
+    { key: 101, value: 101, text: 'Workshop', disabled: true, icon: "tags"},
     { key: 2, value: 2, flag: 'il', text: 'Hebrew' },
     { key: 3, value: 3, flag: 'ru', text: 'Russian' },
     { key: 4, value: 4, flag: 'us', text: 'English' },
@@ -128,7 +126,7 @@ export const dual_languages = [
 ];
 
 export const audio_options = [
-    { key: 101, value: 101, text: '', disabled: true, icon: "tags", label: "Workshop"},
+    { key: 101, value: 101, text: '', disabled: true, label: "Workshop"},
     { key: 2, value: 2, text: 'Hebrew' },
     { key: 3, value: 3, text: 'Russian' },
     { key: 4, value: 4, text: 'English' },
@@ -136,7 +134,7 @@ export const audio_options = [
     { key: 5, value: 5, text: 'French' },
     { key: 8, value: 8, text: 'Italian' },
     { key: 7, value: 7, text: 'German' },
-    { key: 102, value: 102, text: '', disabled: true, icon: "tags", label: "Sources" },
+    { key: 102, value: 102, text: '', disabled: true, label: "Sources" },
     { key: 'he', value: 15, text: 'Hebrew' },
     { key: 'ru', value: 23, text: 'Russian' },
     { key: 'en', value: 24, text: 'English' },
@@ -164,7 +162,7 @@ export const audio_options = [
     { key: 'et', value: 58, text: 'Amharic' },
     { key: 'in', value: 59, text: 'Hindi' },
     { key: 'ir', value: 60, text: 'Persian' },
-    { key: 103, value: 103, text: '', disabled: true, icon: "tags", label: "Special"},
+    { key: 103, value: 103, text: '', disabled: true, label: "Special"},
     { key: 10, value: 10, text: 'Heb - Rus' },
     { key: 17, value: 17, text: 'Heb - Eng' },
 ];
