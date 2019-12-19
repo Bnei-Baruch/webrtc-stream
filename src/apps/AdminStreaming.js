@@ -8,6 +8,7 @@ import './AdminStreaming.css';
 class AdminStreaming extends Component {
 
     state = {
+        ice: null,
         janus: null,
         videostream: null,
         audiostream: null,
@@ -51,6 +52,11 @@ class AdminStreaming extends Component {
                 Janus.log(" :: Connected to JANUS");
                 this.setState({started: true});
                 this.initDataStream();
+                let {videostream,audiostream} = this.state;
+                if(videostream)
+                    this.initVideoStream();
+                if(audiostream)
+                    this.initAudioStream();
             },
             error: (error) => {
                 Janus.log(error);
@@ -62,14 +68,30 @@ class AdminStreaming extends Component {
         this.setState({janus});
     };
 
+    iceState = () => {
+        let count = 0;
+        let chk = setInterval(() => {
+            count++;
+            if(count < 11 && this.state.ice === "connected") {
+                clearInterval(chk);
+            }
+            if(count >= 10) {
+                clearInterval(chk);
+                this.initJanus();
+            }
+        },1000);
+    };
+
     initVideoStream = () => {
+        if(this.state.videostream)
+            this.state.videostream.detach();
         let {janus,videos} = this.state;
         janus.attach({
             plugin: "janus.plugin.streaming",
             opaqueId: "videostream-"+Janus.randomString(12),
             success: (videostream) => {
                 Janus.log(videostream);
-                this.setState({videostream});
+                this.setState({videostream, video_stream: null});
                 videostream.send({message: {request: "watch", id: videos}});
             },
             error: (error) => {
@@ -106,13 +128,15 @@ class AdminStreaming extends Component {
     };
 
     initAudioStream = () => {
+        if(this.state.audiostream)
+            this.state.audiostream.detach();
         let {janus,audios} = this.state;
         janus.attach({
             plugin: "janus.plugin.streaming",
             opaqueId: "audiostream-"+Janus.randomString(12),
             success: (audiostream) => {
                 Janus.log(audiostream);
-                this.setState({audiostream});
+                this.setState({audiostream, audio_stream: null});
                 audiostream.send({message: {request: "watch", id: audios}});
                 audiostream.muteAudio()
             },
@@ -151,6 +175,8 @@ class AdminStreaming extends Component {
     };
 
     initDataStream() {
+        if(this.state.datastream)
+            this.state.datastream.detach();
         this.state.janus.attach({
             plugin: "janus.plugin.streaming",
             opaqueId: "datastream-"+Janus.randomString(12),
@@ -162,6 +188,13 @@ class AdminStreaming extends Component {
             },
             error: (error) => {
                 Janus.log("Error attaching plugin: " + error);
+            },
+            iceState: (state) => {
+                Janus.log("ICE state changed to " + state);
+                this.setState({ice: state});
+                if(state === "disconnected") {
+                    this.iceState();
+                }
             },
             onmessage: (msg, jsep) => {
                 this.onStreamingMessage(this.state.datastream, msg, jsep, true);
@@ -186,27 +219,28 @@ class AdminStreaming extends Component {
     onStreamingMessage = (handle, msg, jsep, initdata) => {
         Janus.log("Got a message", msg);
 
-        if(jsep !== undefined && jsep !== null) {
-            Janus.log("Handling SDP as well...", jsep);
+            if(jsep !== undefined && jsep !== null) {
+                Janus.log("Handling SDP as well...", jsep);
 
-            // Answer
-            handle.createAnswer({
-                jsep: jsep,
-                media: { audioSend: false, videoSend: false, data: initdata },
-                success: (jsep) => {
-                    Janus.log("Got SDP!", jsep);
-                    let body = { request: "start" };
-                    handle.send({message: body, jsep: jsep});
-                },
-                customizeSdp: (jsep) => {
-                    Janus.debug(":: Modify original SDP: ",jsep);
-                    jsep.sdp = jsep.sdp.replace(/a=fmtp:111 minptime=10;useinbandfec=1\r\n/g, 'a=fmtp:111 minptime=10;useinbandfec=1;stereo=1;sprop-stereo=1\r\n');
-                },
-                error: (error) => {
-                    Janus.log("WebRTC error: " + error);
-                }
-            });
-        }
+                // Answer
+                handle.createAnswer({
+                    jsep: jsep,
+                    media: { audioSend: false, videoSend: false, data: initdata },
+                    success: (jsep) => {
+                        Janus.log("Got SDP!", jsep);
+                        let body = { request: "start" };
+                        handle.send({message: body, jsep: jsep});
+                    },
+                    customizeSdp: (jsep) => {
+                        Janus.debug(":: Modify original SDP: ",jsep);
+                        jsep.sdp = jsep.sdp.replace(/a=fmtp:111 minptime=10;useinbandfec=1\r\n/g, 'a=fmtp:111 minptime=10;useinbandfec=1;stereo=1;sprop-stereo=1\r\n');
+                    },
+                    error: (error) => {
+                        Janus.log("WebRTC error: " + error);
+                    }
+                });
+            }
+
     };
 
     setServer = (servers) => {
