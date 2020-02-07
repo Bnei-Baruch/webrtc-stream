@@ -30,7 +30,7 @@ class DualSettings extends Component {
     };
 
     encoderStatus = () => {
-        let req = {req: "strstat", id: "status"};
+        let req = {req: "dual", id: "status"};
         streamFetcher(req,  (data) => {
             let status = data.stdout.replace(/\n/ig, '');
             console.log(":: Got Encoder status: ",status);
