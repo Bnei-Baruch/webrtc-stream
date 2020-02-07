@@ -23,7 +23,7 @@ export const JANUS_IP_EURND = process.env.REACT_APP_JANUS_IP_EURND;
 export const JANUS_IP_EURUK = process.env.REACT_APP_JANUS_IP_EURUK;
 export const JANUS_IP_EURFR = process.env.REACT_APP_JANUS_IP_EURFR;
 export const ENC_URL = process.env.REACT_APP_ENC_URL;
-export const JANUS_SRV_EURFR = "";
+export const JANUS_SRV_EURFR = "https://stream.kli.one/janustrl";
 
 
 export const servers_options = [

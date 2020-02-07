@@ -30,7 +30,7 @@ class DualSettings extends Component {
     };
 
     encoderStatus = () => {
-        let req = {req: "dual", id: "status"};
+        let req = {id: "dual", req: "strstat"};
         streamFetcher(req,  (data) => {
             let status = data.stdout.replace(/\n/ig, '');
             console.log(":: Got Encoder status: ",status);
@@ -42,7 +42,7 @@ class DualSettings extends Component {
         this.setState({disabled: true, loading: true});
         setTimeout(() => this.setState({disabled: false, loading: false}), 2000);
         let {status} = this.state;
-        let req = {id:"dual", req: status === "On" ? "stop" : "start"};
+        let req = {id: "dual", req: status === "On" ? "stop" : "start"};
         streamFetcher(req,  (data) => {
             console.log(":: Start Encoder status: ",data);
             status = status === "On" ? "Off" : "On";
