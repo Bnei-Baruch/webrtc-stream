@@ -14,7 +14,7 @@ export const JANUS_SRV_VRT = process.env.REACT_APP_JANUS_SRV_VRT;
 export const JANUS_SRV_GXY = process.env.REACT_APP_JANUS_SRV_GXY;
 export const JANUS_ADMIN_VRT = process.env.REACT_APP_ADMIN_SRV_VRT;
 export const JANUS_ADMIN_GXY = process.env.REACT_APP_ADMIN_SRV_GXY;
-export const JANUS_STR_SRV_IL = process.env.REACT_APP_JANUS_STR_SRV_IL;
+export const JANUS_STR_SRV_PL = process.env.REACT_APP_JANUS_STR_SRV_PL;
 export const JANUS_STR_SRV_UK = process.env.REACT_APP_JANUS_STR_SRV_UK;
 export const JANUS_STR_SRV_GR = process.env.REACT_APP_JANUS_STR_SRV_GR;
 export const JANUS_STR_SRV_BB = process.env.REACT_APP_JANUS_STR_SRV_BB;
@@ -29,7 +29,7 @@ export const JANUS_SRV_EURFR = "https://stream.kli.one/janustrl";
 export const servers_options = [
     { key: 1, text: 'Europe (UK)', value: `${JANUS_STR_SRV_UK}` },
     { key: 2, text: 'Europe (GR)', value: `${JANUS_STR_SRV_GR}` },
-    { key: 3, text: 'Israel (PT)', value: `${JANUS_STR_SRV_IL}` },
+    { key: 3, text: 'Europe (PL)', value: `${JANUS_STR_SRV_PL}` },
     { key: 4, text: 'Merkaz (PT)', value: `${JANUS_STR_SRV_BB}` },
 ];
 
