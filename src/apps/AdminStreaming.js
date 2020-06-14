@@ -1,13 +1,16 @@
-import React, { Component } from 'react';
+import React, {Component, Fragment} from 'react';
 import { Janus } from "../lib/janus";
 import { Segment, Menu, Select, Button, Grid } from 'semantic-ui-react';
 import VolumeSlider from "../components/VolumeSlider";
 import {servers_options, admin_videos_options, audio_options, JANUS_STR_SRV_GR} from "../shared/consts";
+import {kc} from "../components/UserManager";
+import LoginPage from "../components/LoginPage";
 import './AdminStreaming.css';
 
 class AdminStreaming extends Component {
 
     state = {
+        user: null,
         ice: null,
         janus: null,
         videostream: null,
@@ -22,8 +25,17 @@ class AdminStreaming extends Component {
         started: false
     };
 
-    componentDidMount() {
-        Janus.init({debug: ["log","error"], callback: this.initJanus});
+    checkPermission = (user) => {
+        const gxy_user = kc.hasRealmRole("gxy_user");
+        if (gxy_user) {
+            delete user.roles;
+            user.role = "user";
+            this.setState({user})
+            Janus.init({debug: ["log","error"], callback: this.initJanus});
+        } else {
+            alert("Access denied!");
+            //kc.logout();
+        }
     };
 
     componentWillUnmount() {
@@ -303,82 +315,87 @@ class AdminStreaming extends Component {
 
   render() {
 
-      const {servers, videos, audios, muted, video} = this.state;
+      const {user, servers, videos, audios, muted, video} = this.state;
+
+      let login = (<LoginPage user={user} checkPermission={this.checkPermission} />);
+
+      let content = (
+          <Segment compact color='brown' raised>
+              <Segment textAlign='center' className="ingest_segment" raised secondary>
+                  <Menu secondary size='huge'>
+                      <Menu.Item>
+                          <Select compact
+                                  error={!servers}
+                                  placeholder="Server:"
+                                  value={servers}
+                                  options={servers_options}
+                                  onChange={(e, {value}) => this.setServer(value)} />
+                          <Button positive={video} negative={!video} size='huge'
+                                  icon={video ? "eye" : "eye slash"}
+                                  onClick={this.videoMute} />
+                      </Menu.Item>
+                      <Menu.Item>
+                          <Select
+                              compact
+                              error={!videos}
+                              placeholder="Video:"
+                              value={videos}
+                              options={admin_videos_options}
+                              onChange={(e,{value}) => this.setVideo(value)} />
+                      </Menu.Item>
+                      <Menu.Item>
+                          <Select
+                              compact={true}
+                              error={!audios}
+                              placeholder="Audio:"
+                              value={audios}
+                              options={audio_options}
+                              onChange={(e,{value}) => this.setAudio(value)} />
+                          <Button positive={!muted} size='huge'
+                                  negative={muted}
+                                  icon={muted ? "volume off" : "volume up"}
+                                  onClick={this.audioMute}/>
+                      </Menu.Item>
+                      {/*<canvas ref="canvas1" id="canvas1" width="25" height="50" />*/}
+                  </Menu>
+              </Segment>
+              { !video ? '' :
+                  <video ref="remoteVideo"
+                         id="remoteVideo"
+                         width="640"
+                         height="360"
+                         autoPlay={true}
+                         controls={false}
+                         muted={true}
+                         playsInline={true} /> }
+
+              <audio ref="remoteAudio"
+                     id="remoteAudio"
+                     autoPlay={true}
+                     controls={false}
+                     muted={muted} />
+
+              <Grid columns={3}>
+                  <Grid.Column>
+                  </Grid.Column>
+                  <Grid.Column width={14}>
+                      <VolumeSlider volume={this.setVolume} />
+                  </Grid.Column>
+                  <Grid.Column width={1}>
+                      <Button color='blue'
+                              icon='expand arrows alternate'
+                              onClick={this.toggleFullScreen}/>
+                  </Grid.Column>
+              </Grid>
+              {/*<VolumeMeter audioContext={this.remoteAudio.current} width={600} height={200}/>*/}
+              {/*<AudioMeter/>*/}
+          </Segment>
+      );
 
     return (
-
-      <Segment compact color='brown' raised>
-
-          <Segment textAlign='center' className="ingest_segment" raised secondary>
-              <Menu secondary size='huge'>
-                  <Menu.Item>
-                      <Select compact
-                          error={!servers}
-                          placeholder="Server:"
-                          value={servers}
-                          options={servers_options}
-                          onChange={(e, {value}) => this.setServer(value)} />
-                      <Button positive={video} negative={!video} size='huge'
-                              icon={video ? "eye" : "eye slash"}
-                              onClick={this.videoMute} />
-                  </Menu.Item>
-                  <Menu.Item>
-                      <Select
-                          compact
-                          error={!videos}
-                          placeholder="Video:"
-                          value={videos}
-                          options={admin_videos_options}
-                          onChange={(e,{value}) => this.setVideo(value)} />
-                  </Menu.Item>
-                  <Menu.Item>
-                      <Select
-                          compact={true}
-                          error={!audios}
-                          placeholder="Audio:"
-                          value={audios}
-                          options={audio_options}
-                          onChange={(e,{value}) => this.setAudio(value)} />
-                      <Button positive={!muted} size='huge'
-                              negative={muted}
-                              icon={muted ? "volume off" : "volume up"}
-                              onClick={this.audioMute}/>
-                  </Menu.Item>
-                  {/*<canvas ref="canvas1" id="canvas1" width="25" height="50" />*/}
-              </Menu>
-          </Segment>
-
-          { !video ? '' :
-          <video ref="remoteVideo"
-                 id="remoteVideo"
-                 width="640"
-                 height="360"
-                 autoPlay={true}
-                 controls={false}
-                 muted={true}
-                 playsInline={true} /> }
-
-          <audio ref="remoteAudio"
-                 id="remoteAudio"
-                 autoPlay={true}
-                 controls={false}
-                 muted={muted} />
-
-          <Grid columns={3}>
-              <Grid.Column>
-              </Grid.Column>
-              <Grid.Column width={14}>
-                  <VolumeSlider volume={this.setVolume} />
-              </Grid.Column>
-              <Grid.Column width={1}>
-                  <Button color='blue'
-                          icon='expand arrows alternate'
-                          onClick={this.toggleFullScreen}/>
-              </Grid.Column>
-          </Grid>
-          {/*<VolumeMeter audioContext={this.remoteAudio.current} width={600} height={200}/>*/}
-          {/*<AudioMeter/>*/}
-      </Segment>
+        <Fragment>
+            {user ? content : login}
+        </Fragment>
     );
   }
 }
