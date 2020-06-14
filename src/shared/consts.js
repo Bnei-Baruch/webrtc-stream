@@ -165,6 +165,7 @@ export const audio_options = [
     { key: 103, value: 103, text: '', disabled: true, label: "Special"},
     { key: 10, value: 10, text: 'Heb - Rus' },
     { key: 17, value: 17, text: 'Heb - Eng' },
+    { key: 'gxy5', value: 204, text: 'Galaxy' },
 ];
 
 export const ulpan1_audio_options = [
@@ -214,6 +215,10 @@ export const audiog_options = [
     { key: 99, value: 99, text: 'Special', disabled: true, icon: "tags", selected: true},
     { key: 'heru', value: 10, text: 'Heb-Rus' },
     { key: 'heen', value: 17, text: 'Heb-Eng' },
+    { key: 'gxy1', value: 201, text: 'Galaxy1' },
+    { key: 'gxy2', value: 202, text: 'Galaxy4' },
+    { key: 'gxy3', value: 203, text: 'Galaxy2' },
+    { key: 'gxy5', value: 204, text: 'Galaxy5' },
 ];
 
 export const gxycol = [0, 201, 203, 202, 204];
