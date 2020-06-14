@@ -5,10 +5,13 @@ import {cloneStream, initJanus, testContext} from "../shared/tools";
 //import VolumeSlider from "../components/VolumeSlider";
 import {audio_options, JANUS_SRV_EURFR} from "../shared/consts";
 import './AdminStreaming.css';
+import {kc} from "../components/UserManager";
+import LoginPage from "../components/LoginPage";
 
 class AudioOut extends Component {
 
     state = {
+        user: null,
         janus: null,
         videostream: null,
         audiostream: null,
@@ -45,8 +48,17 @@ class AudioOut extends Component {
         audio_devices: [],
     };
 
-    componentDidMount() {
-        this.initApp();
+    checkPermission = (user) => {
+        const gxy_user = kc.hasRealmRole("gxy_user");
+        if (gxy_user) {
+            delete user.roles;
+            user.role = "user";
+            this.setState({user})
+            this.initApp();
+        } else {
+            alert("Access denied!");
+            window.location = 'https://stream.kli.one';
+        }
     };
 
     componentWillUnmount() {
@@ -233,12 +245,14 @@ class AudioOut extends Component {
 
   render() {
 
-      const {audio_devices, handles} = this.state;
+      const {user, audio_devices, handles} = this.state;
 
       let adevices_list = audio_devices.map((device,i) => {
           const {label, deviceId} = device;
           return ({ key: i, text: label, value: deviceId})
       });
+
+      let login = (<LoginPage user={user} checkPermission={this.checkPermission} />);
 
       let audio_panels = handles.map((o,i) => {
           return (
@@ -288,9 +302,8 @@ class AudioOut extends Component {
 
 
     return (
-
       <Segment compact>
-          {audio_panels}
+          {user ? audio_panels : login}
       </Segment>
     );
   }

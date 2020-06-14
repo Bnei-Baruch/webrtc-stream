@@ -26,15 +26,15 @@ class AdminStreaming extends Component {
     };
 
     checkPermission = (user) => {
-        const gxy_user = kc.hasRealmRole("gxy_user");
-        if (gxy_user) {
+        const bb_user = kc.hasRealmRole("bb_user");
+        if (bb_user) {
             delete user.roles;
             user.role = "user";
             this.setState({user})
             Janus.init({debug: ["log","error"], callback: this.initJanus});
         } else {
             alert("Access denied!");
-            //kc.logout();
+            window.location = 'https://stream.kli.one';
         }
     };
 

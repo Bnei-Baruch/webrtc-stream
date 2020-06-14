@@ -1,15 +1,18 @@
-import React, { Component } from 'react';
+import React, {Component, Fragment} from 'react';
 import { Janus } from "../lib/janus";
 import {Segment, Menu, Select, Label, Message, Modal, Button} from 'semantic-ui-react';
 import {cloneStream, getState, initJanus, testContext} from "../shared/tools";
 import {JANUS_SRV_EURFR} from "../shared/consts";
 import './AdminStreaming.css';
 import DualSettings from "./DualSettings";
+import {kc} from "../components/UserManager";
+import LoginPage from "../components/LoginPage";
 //import VolumeSlider from "../components/VolumeSlider";
 
 class DualOut extends Component {
 
     state = {
+        user: null,
         janus: null,
         videostream: null,
         audiostream: null,
@@ -58,12 +61,21 @@ class DualOut extends Component {
         }
     };
 
-    componentDidMount() {
-        getState(`webrtc/dual`, (dual) => {
-            console.log("Got state: ", dual);
-            this.setState({dual});
-            this.initApp();
-        });
+    checkPermission = (user) => {
+        const gxy_user = kc.hasRealmRole("gxy_user");
+        if (gxy_user) {
+            delete user.roles;
+            user.role = "user";
+            this.setState({user})
+            getState(`webrtc/dual`, (dual) => {
+                console.log("Got state: ", dual);
+                this.setState({dual});
+                this.initApp();
+            });
+        } else {
+            alert("Access denied!");
+            window.location = 'https://stream.kli.one';
+        }
     };
 
     componentWillUnmount() {
@@ -257,7 +269,7 @@ class DualOut extends Component {
 
   render() {
 
-      const {audio_devices, handles, dual} = this.state;
+      const {user, audio_devices, handles, dual} = this.state;
 
       const dual_options = [
           { key: 2, value: 22, text: dual.d1.left + "-" + dual.d1.right },
@@ -321,15 +333,22 @@ class DualOut extends Component {
           )
       });
 
+      let content = (
+          <Segment compact >
+              <Modal trigger={<Label as='a' color='grey' corner='right' icon='settings' />} onClose={this.modalClose} >
+                  <DualSettings dual={dual} />
+              </Modal>
+              {audio_panels}
+          </Segment>
+      );
+
+      let login = (<LoginPage user={user} checkPermission={this.checkPermission} />);
+
 
     return (
-
-      <Segment compact >
-          <Modal trigger={<Label as='a' color='grey' corner='right' icon='settings' />} onClose={this.modalClose} >
-              <DualSettings dual={dual} />
-          </Modal>
-          {audio_panels}
-      </Segment>
+        <Fragment>
+            {user ? content : login}
+        </Fragment>
     );
   }
 }
