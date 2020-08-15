@@ -17,6 +17,9 @@ export const JANUS_ADMIN_GXY = process.env.REACT_APP_ADMIN_SRV_GXY;
 export const JANUS_STR_SRV_PL = process.env.REACT_APP_JANUS_STR_SRV_PL;
 export const JANUS_STR_SRV_UK = process.env.REACT_APP_JANUS_STR_SRV_UK;
 export const JANUS_STR_SRV_GR = process.env.REACT_APP_JANUS_STR_SRV_GR;
+export const JANUS_STR_SRV_SB = process.env.REACT_APP_JANUS_STR_SRV_SB;
+export const JANUS_STR_SRV_RB = process.env.REACT_APP_JANUS_STR_SRV_RB;
+export const JANUS_STR_SRV_VM = process.env.REACT_APP_JANUS_STR_SRV_VM;
 export const JANUS_STR_SRV_BB = process.env.REACT_APP_JANUS_STR_SRV_BB;
 export const JANUS_IP_ISRPT = process.env.REACT_APP_JANUS_IP_ISRPT;
 export const JANUS_IP_EURND = process.env.REACT_APP_JANUS_IP_EURND;
@@ -30,7 +33,10 @@ export const servers_options = [
     { key: 1, text: 'Europe (UK)', value: `${JANUS_STR_SRV_UK}` },
     { key: 2, text: 'Europe (GR)', value: `${JANUS_STR_SRV_GR}` },
     { key: 3, text: 'Europe (PL)', value: `${JANUS_STR_SRV_PL}` },
-    { key: 4, text: 'Merkaz (PT)', value: `${JANUS_STR_SRV_BB}` },
+    { key: 4, text: 'Europe (SB)', value: `${JANUS_STR_SRV_SB}` },
+    { key: 5, text: 'Europe (RB)', value: `${JANUS_STR_SRV_RB}` },
+    { key: 6, text: 'Europe (VM)', value: `${JANUS_STR_SRV_VM}` },
+    { key: 7, text: 'Merkaz (PT)', value: `${JANUS_STR_SRV_BB}` },
 ];
 
 export const videos_options = [
