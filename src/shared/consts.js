@@ -19,7 +19,8 @@ export const JANUS_STR_SRV_UK = process.env.REACT_APP_JANUS_STR_SRV_UK;
 export const JANUS_STR_SRV_GR = process.env.REACT_APP_JANUS_STR_SRV_GR;
 export const JANUS_STR_SRV_SB = process.env.REACT_APP_JANUS_STR_SRV_SB;
 export const JANUS_STR_SRV_RB = process.env.REACT_APP_JANUS_STR_SRV_RB;
-export const JANUS_STR_SRV_VM = process.env.REACT_APP_JANUS_STR_SRV_VM;
+export const JANUS_STR_SRV6 = process.env.REACT_APP_JANUS_STR_SRV6;
+export const JANUS_STR_SRV7 = process.env.REACT_APP_JANUS_STR_SRV7;
 export const JANUS_STR_SRV_BB = process.env.REACT_APP_JANUS_STR_SRV_BB;
 export const JANUS_IP_ISRPT = process.env.REACT_APP_JANUS_IP_ISRPT;
 export const JANUS_IP_EURND = process.env.REACT_APP_JANUS_IP_EURND;
@@ -30,13 +31,14 @@ export const JANUS_SRV_EURFR = "https://stream.kli.one/janustrl";
 
 
 export const servers_options = [
-    { key: 1, text: 'Europe (UK)', value: `${JANUS_STR_SRV_UK}` },
-    { key: 2, text: 'Europe (GR)', value: `${JANUS_STR_SRV_GR}` },
-    { key: 3, text: 'Europe (PL)', value: `${JANUS_STR_SRV_PL}` },
-    { key: 4, text: 'Europe (SB)', value: `${JANUS_STR_SRV_SB}` },
-    { key: 5, text: 'Europe (RB)', value: `${JANUS_STR_SRV_RB}` },
-    { key: 6, text: 'Europe (VM)', value: `${JANUS_STR_SRV_VM}` },
-    { key: 7, text: 'Merkaz (PT)', value: `${JANUS_STR_SRV_BB}` },
+    { key: 1, text: 'Str1 (GR)', value: `${JANUS_STR_SRV_GR}` },
+    { key: 2, text: 'Str2 (UK)', value: `${JANUS_STR_SRV_UK}` },
+    { key: 3, text: 'Str3 (PL)', value: `${JANUS_STR_SRV_PL}` },
+    { key: 4, text: 'Str4 (SB)', value: `${JANUS_STR_SRV_SB}` },
+    { key: 5, text: 'Str5 (RB)', value: `${JANUS_STR_SRV_RB}` },
+    { key: 6, text: 'Str6 (GR)', value: `${JANUS_STR_SRV6}` },
+    { key: 7, text: 'Str7 (GR)', value: `${JANUS_STR_SRV7}` },
+    { key: 8, text: 'Mkz1 (PT)', value: `${JANUS_STR_SRV_BB}` },
 ];
 
 export const videos_options = [
