@@ -1,7 +1,7 @@
 import Keycloak from 'keycloak-js';
 
 const userManagerConfig = {
-    url: 'https://accounts.kbb1.com/auth',
+    url: 'https://accounts.kab.info/auth',
     realm: 'main',
     clientId: 'galaxy',
     scope: 'profile',
