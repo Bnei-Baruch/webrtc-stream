@@ -2,18 +2,21 @@ import React, { Component } from 'react';
 import { Janus } from "../lib/janus";
 import { Segment, Header, Message, Grid } from 'semantic-ui-react';
 //import VolumeSlider from "../components/VolumeSlider";
-import {CAP1_URL, CAP2_URL, JANUS_SRV_EURFR} from "../shared/consts";
+import {JANUS_SRV_EURFR} from "../shared/consts";
 import './AdminStreaming.css';
-import {initJanus,getData} from "../shared/tools";
+import {initJanus,toHms} from "../shared/tools";
+import mqtt from "../shared/mqtt";
 
 class CaptureMonitor extends Component {
 
     state = {
         janus: null,
         ulpan1: null,
+        ulpan1_src: "mltcap",
         ulpan1_status: null,
         ulpan1_timer: null,
         ulpan2: null,
+        ulpan2_src: "maincap",
         ulpan2_status: null,
         ulpan2_timer: null,
         audio: null,
@@ -22,26 +25,13 @@ class CaptureMonitor extends Component {
         videos: 1,
         audios: 15,
         muted: true,
-        started: false
+        started: false,
+        user: {id: "capture-status", email: "capture-status@bbdomain.org"}
     };
 
     componentDidMount() {
-        let ulpan1_ival = setInterval(() => {
-            getData(`${CAP1_URL}`, data => {
-                let {status,time} = data.result;
-                let timer = time.split('.')[0] || '00:00:00';
-                this.setState({ulpan1_status: status, ulpan1_timer: timer});
-            })
-        }, 1000);
-        let ulpan2_ival = setInterval(() => {
-            getData(`${CAP2_URL}`, data => {
-                let {status,time} = data.result;
-                let timer = time.split('.')[0] || '00:00:00';
-                this.setState({ulpan2_status: status, ulpan2_timer: timer});
-            })
-        }, 1000);
-        this.setState({ulpan1_ival,ulpan2_ival});
-        this.initApp()
+        this.initApp();
+        this.initMQTT();
     };
 
     componentWillUnmount() {
@@ -59,6 +49,39 @@ class CaptureMonitor extends Component {
                 this.initApp();
             }, 5000);
         }, true);
+    };
+
+    initMQTT = () => {
+        mqtt.init(this.state.user, (data) => {
+            console.log("[mqtt] init: ", data);
+            const watch = 'exec/service/data/#';
+            const local = window.location.hostname !== "shidur.kli.one";
+            const topic = local ? watch : 'bb/' + watch;
+            mqtt.join(topic);
+            mqtt.watch((message, topic) => {
+                this.onMqttMessage(message, topic);
+            }, false)
+        })
+    };
+
+    onMqttMessage = (message, topic) => {
+        const src = topic.split("/")[3]
+        const {ulpan1_src,ulpan2_src} = this.state;
+        let services = message.data;
+        if(services) {
+            for(let i=0; i<services.length; i++) {
+                if(ulpan1_src === src) {
+                    let ulpan1_status = services[i].alive;
+                    let ulpan1_timer = ulpan1_status ? toHms(services[i].runtime) : "00:00:00";
+                    this.setState({ulpan1_timer, ulpan1_status});
+                }
+                if(ulpan2_src === src) {
+                    let ulpan2_status = services[i].alive;
+                    let ulpan2_timer = ulpan2_status ? toHms(services[i].runtime) : "00:00:00";
+                    this.setState({ulpan2_timer, ulpan2_status});
+                }
+            }
+        }
     };
 
     checkAutoPlay = () => {
@@ -244,7 +267,7 @@ class CaptureMonitor extends Component {
 
       <Segment compact>
 
-          <Segment textAlign='center' className="ingest_segment" raised secondary>
+          <Segment textAlign='center' raised secondary>
               <Grid columns={2} stackable textAlign='center'>
                   {/*<Divider vertical>Or</Divider>*/}
 
@@ -253,8 +276,8 @@ class CaptureMonitor extends Component {
                           <Header as='h1'>Ulpan - 1</Header>
                           <Header as='h1'>
                               <Message compact
-                                       negative={ulpan1_status === "Off"}
-                                       positive={ulpan1_status === "On"}
+                                       negative={!ulpan1_status}
+                                       positive={ulpan1_status}
                                        className='timer' >{ulpan1_timer}</Message>
                           </Header>
                           <video ref="ulpan1"
@@ -271,8 +294,8 @@ class CaptureMonitor extends Component {
                           <Header as='h1'>Ulpan - 2</Header>
                           <Header as='h1'>
                               <Message compact
-                                       negative={ulpan2_status === "Off"}
-                                       positive={ulpan2_status === "On"}
+                                       negative={!ulpan2_status}
+                                       positive={ulpan2_status}
                                        className='timer' >{ulpan2_timer}</Message>
                           </Header>
                           <video ref="ulpan2"

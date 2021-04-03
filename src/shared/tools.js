@@ -9,6 +9,27 @@ import {
     ENC_URL
 } from "./consts";
 
+export const MQTT_LCL_URL = process.env.REACT_APP_MQTT_LCL_URL;
+export const MQTT_EXT_URL = process.env.REACT_APP_MQTT_EXT_URL;
+
+export const toHms = (totalSec) => {
+    let d = parseInt(totalSec / (3600*24));
+    let h = parseInt( totalSec / 3600 , 10) % 24;
+    let m = parseInt( totalSec / 60 , 10) % 60;
+    let s = (totalSec % 60).toFixed(0);
+    if (s < 0) s = 0;
+    return (d > 0 ? d + "d " : "") + (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m) + ":" + (s  < 10 ? "0" + s : s);
+};
+
+export const randomString = (len) => {
+    let charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let randomString = '';
+    for (let i = 0; i < len; i++) {
+        let randomPoz = Math.floor(Math.random() * charSet.length);
+        randomString += charSet.substring(randomPoz,randomPoz+1);
+    }
+    return randomString;
+};
 
 export const initJanus = (cb,er,lcl) => {
     Janus.init({
