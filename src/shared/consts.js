@@ -14,35 +14,43 @@ export const JANUS_SRV_VRT = process.env.REACT_APP_JANUS_SRV_VRT;
 export const JANUS_SRV_GXY = process.env.REACT_APP_JANUS_SRV_GXY;
 export const JANUS_ADMIN_VRT = process.env.REACT_APP_ADMIN_SRV_VRT;
 export const JANUS_ADMIN_GXY = process.env.REACT_APP_ADMIN_SRV_GXY;
-export const JANUS_STR_SRV_PL = process.env.REACT_APP_JANUS_STR_SRV_PL;
-export const JANUS_STR_SRV_UK = process.env.REACT_APP_JANUS_STR_SRV_UK;
-export const JANUS_STR_SRV_GR = process.env.REACT_APP_JANUS_STR_SRV_GR;
-export const JANUS_STR_SRV_SB = process.env.REACT_APP_JANUS_STR_SRV_SB;
-export const JANUS_STR_SRV_RB = process.env.REACT_APP_JANUS_STR_SRV_RB;
+export const JANUS_STR_SRV1 = process.env.REACT_APP_JANUS_STR_SRV1;
+export const JANUS_STR_SRV2 = process.env.REACT_APP_JANUS_STR_SRV2;
+export const JANUS_STR_SRV3 = process.env.REACT_APP_JANUS_STR_SRV3;
+export const JANUS_STR_SRV4 = process.env.REACT_APP_JANUS_STR_SRV4;
+export const JANUS_STR_SRV5 = process.env.REACT_APP_JANUS_STR_SRV5;
 export const JANUS_STR_SRV6 = process.env.REACT_APP_JANUS_STR_SRV6;
 export const JANUS_STR_SRV7 = process.env.REACT_APP_JANUS_STR_SRV7;
 export const JANUS_STR_SRV8 = process.env.REACT_APP_JANUS_STR_SRV8;
 export const JANUS_STR_SRV9 = process.env.REACT_APP_JANUS_STR_SRV9;
+export const JANUS_STR_SRV10 = process.env.REACT_APP_JANUS_STR_SRV10;
+export const JANUS_STR_SRV11 = process.env.REACT_APP_JANUS_STR_SRV11;
+export const JANUS_STR_SRV12 = process.env.REACT_APP_JANUS_STR_SRV12;
 export const JANUS_STR_SRV_BB = process.env.REACT_APP_JANUS_STR_SRV_BB;
 export const JANUS_IP_ISRPT = process.env.REACT_APP_JANUS_IP_ISRPT;
 export const JANUS_IP_EURND = process.env.REACT_APP_JANUS_IP_EURND;
 export const JANUS_IP_EURUK = process.env.REACT_APP_JANUS_IP_EURUK;
 export const JANUS_IP_EURFR = process.env.REACT_APP_JANUS_IP_EURFR;
 export const ENC_URL = process.env.REACT_APP_ENC_URL;
+export const JNS_SRV = process.env.REACT_APP_JNS_SRV
 export const JANUS_SRV_EURFR = "https://stream.kli.one/janustrl";
 
 
 export const servers_options = [
-    { key: 1, text: 'Str1', value: `${JANUS_STR_SRV_GR}` },
-    { key: 2, text: 'Str2', value: `${JANUS_STR_SRV_UK}` },
-    { key: 3, text: 'Str3', value: `${JANUS_STR_SRV_PL}` },
-    { key: 4, text: 'Str4', value: `${JANUS_STR_SRV_SB}` },
-    { key: 5, text: 'Str5', value: `${JANUS_STR_SRV_RB}` },
+    { key: 0, text: 'Test', value: `https://gxydev.kli.one/janusgxy` },
+    { key: 1, text: 'Str1', value: `${JANUS_STR_SRV1}` },
+    { key: 2, text: 'Str2', value: `${JANUS_STR_SRV2}` },
+    { key: 3, text: 'Str3', value: `${JANUS_STR_SRV3}` },
+    { key: 4, text: 'Str4', value: `${JANUS_STR_SRV4}` },
+    { key: 5, text: 'Str5', value: `${JANUS_STR_SRV5}` },
     { key: 6, text: 'Str6', value: `${JANUS_STR_SRV6}` },
     { key: 7, text: 'Str7', value: `${JANUS_STR_SRV7}` },
     { key: 8, text: 'Str8', value: `${JANUS_STR_SRV8}` },
     { key: 9, text: 'Str9', value: `${JANUS_STR_SRV9}` },
-    { key: 10, text: 'Mkz', value: `${JANUS_STR_SRV_BB}` },
+    { key: 10, text: 'Str10', value: `${JANUS_STR_SRV10}` },
+    { key: 11, text: 'Str11', value: `${JANUS_STR_SRV11}` },
+    { key: 12, text: 'Str12', value: `${JANUS_STR_SRV12}` },
+    { key: 13, text: 'Mkz', value: `${JANUS_STR_SRV_BB}` },
 ];
 
 export const videos_options = [

@@ -22,7 +22,7 @@ class LocalStream extends Component {
     };
 
     componentDidMount() {
-        this.initApp(this.props.id);
+        this.initApp();
     };
 
     componentWillUnmount() {
@@ -30,26 +30,16 @@ class LocalStream extends Component {
     };
 
     initApp = (id) => {
-        if(id) {
+        initJanus(janus => {
+            let id = this.state.ulpan === "Ulpan - 1" ? 511 : 521;
+            let audios = id === 511 ? 512 : 522;
+            this.setState({janus,audios});
+            //this.initVideoStream(id);
+        }, er => {
             setTimeout(() => {
-                let ulpan = id === 511 ? "Ulpan - 1" : "Ulpan - 2";
-                let audios = id === 511 ? 512 : 522;
-                this.setState({ulpan, audios, janus: this.props.janus} , () => {
-                    this.initVideoStream(id);
-                });
-            }, 1000);
-        } else {
-            initJanus(janus => {
-                let id = this.state.ulpan === "Ulpan - 1" ? 511 : 521;
-                let audios = id === 511 ? 512 : 522;
-                this.setState({janus,audios});
-                this.initVideoStream(id);
-            }, er => {
-                setTimeout(() => {
-                    this.initApp();
-                }, 5000);
-            }, true);
-        }
+                //this.initApp();
+            }, 5000);
+        }, true);
     };
 
     checkAutoPlay = () => {
@@ -139,7 +129,7 @@ class LocalStream extends Component {
                 this.setState({audio_stream: stream});
                 Janus.log("Created remote audio stream:", stream);
                 let audio = this.refs.remoteAudio;
-                this.checkAutoPlay();
+                //this.checkAutoPlay();
                 Janus.attachMediaStream(audio, stream);
                 //StreamVisualizer2(stream, this.refs.canvas1.current,50);
             },
@@ -210,6 +200,17 @@ class LocalStream extends Component {
         }
     };
 
+    videoMute = () => {
+        let video = this.state.video;
+        if(!this.state.videostream && !video) {
+            this.initVideoStream(511);
+        } else {
+            this.state.videostream.hangup();
+            this.setState({videostream: null, video_stream: null});
+        }
+        this.setState({video: !video});
+    };
+
     toggleFullScreen = () => {
         let vid = this.refs.remoteVideo;
         if(vid) vid.webkitEnterFullscreen();
@@ -218,7 +219,7 @@ class LocalStream extends Component {
 
     render() {
 
-        const {audios, muted, ulpan} = this.state;
+        const {audios, muted, ulpan, video} = this.state;
 
         const url = ulpan === "Ulpan - 1" ? "ulpan1" : "ulpan2";
 
@@ -243,16 +244,16 @@ class LocalStream extends Component {
                     </Menu.Item>
                 </Menu>
 
+                { !video ? '' :
+                    <video ref="remoteVideo"
+                           id="remoteVideo"
+                           width="640"
+                           height="360"
+                           autoPlay={true}
+                           controls={false}
+                           muted={true}
+                           playsInline={true} /> }
 
-                <video ref="remoteVideo"
-                       id="remoteVideo"
-                       width="100%"
-                       height="100%"
-                       muted
-                       defaultMuted
-                       autoPlay={true}
-                       controls={true}
-                       playsInline={true} />
 
                 <audio ref="remoteAudio"
                        id="remoteAudio"
@@ -264,6 +265,11 @@ class LocalStream extends Component {
                     <Table.Row>
                         <Table.Cell width={5} >
                             <VolumeSlider volume={this.setVolume} />
+                        </Table.Cell>
+                        <Table.Cell width={1}>
+                            <Button positive={video} negative={!video}
+                                    icon={video ? "eye" : "eye slash"}
+                                    onClick={this.videoMute} />
                         </Table.Cell>
                         <Table.Cell width={1}>
                             <Button positive={!muted}

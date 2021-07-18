@@ -18,7 +18,7 @@ class AdminStreaming extends Component {
         datastream: null,
         audio: null,
         video: false,
-        servers: `${JANUS_STR_SRV_GR}`,
+        servers: `https://gxydev.kli.one/janusgxy`,
         videos: 1,
         audios: 15,
         muted: true,
@@ -63,7 +63,7 @@ class AdminStreaming extends Component {
             success: () => {
                 Janus.log(" :: Connected to JANUS");
                 this.setState({started: true});
-                this.initDataStream();
+                //this.initDataStream();
                 let {videostream,audiostream} = this.state;
                 if(videostream)
                     this.initVideoStream();

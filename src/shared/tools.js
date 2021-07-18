@@ -6,7 +6,7 @@ import {
     STUN_SRV_GXY,
     JSDB_STATE,
     JSRP_STATE,
-    ENC_URL
+    ENC_URL, JNS_SRV
 } from "./consts";
 
 export const MQTT_LCL_URL = process.env.REACT_APP_MQTT_LCL_URL;
@@ -33,10 +33,10 @@ export const randomString = (len) => {
 
 export const initJanus = (cb,er,lcl) => {
     Janus.init({
-        debug: process.env.NODE_ENV !== 'production' ? ["log", "error"] : ["error"],
+        debug: process.env.NODE_ENV !== 'production' ? ["log", "error"] : ["log", "error"],
         callback: () => {
             let janus = new Janus({
-                server: lcl ? JANUS_STR_SRV_BB : JANUS_SRV_EURFR,
+                server: lcl ? JNS_SRV : JANUS_SRV_EURFR,
                 iceServers: [{urls: lcl ? STUN_SRV_MKZ : STUN_SRV_GXY}],
                 success: () => {
                     Janus.log(" :: Connected to JANUS");
