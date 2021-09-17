@@ -47,9 +47,10 @@ export const servers_options = [
     { key: 7, text: 'Str7', value: `${JANUS_STR_SRV7}` },
     { key: 8, text: 'Str8', value: `${JANUS_STR_SRV8}` },
     { key: 9, text: 'Str9', value: `${JANUS_STR_SRV9}` },
-    { key: 10, text: 'Str10', value: `${JANUS_STR_SRV10}` },
-    { key: 11, text: 'Str11', value: `${JANUS_STR_SRV11}` },
-    { key: 12, text: 'Str12', value: `${JANUS_STR_SRV12}` },
+    { key: 10, text: 'Mcast', value: `https://str11.kli.one/janusgxy` },
+    // { key: 10, text: 'Str10', value: `${JANUS_STR_SRV10}` },
+    // { key: 11, text: 'Str11', value: `${JANUS_STR_SRV11}` },
+    // { key: 12, text: 'Str12', value: `${JANUS_STR_SRV12}` },
     { key: 13, text: 'Mkz', value: `${JANUS_STR_SRV_BB}` },
 ];
 
@@ -186,6 +187,14 @@ export const audio_options = [
     { key: 10, value: 10, text: 'Heb - Rus' },
     { key: 17, value: 17, text: 'Heb - Eng' },
     { key: 'gxy5', value: 204, text: 'Galaxy' },
+    { key: 104, value: 104, text: '', disabled: true, label: "Trl"},
+    { key: 301, value: 301, flag: 'il', text: 'Hebrew' },
+    { key: 302, value: 302, flag: 'ru', text: 'Russian' },
+    { key: 303, value: 303, flag: 'us', text: 'English' },
+    { key: 304, value: 304, flag: 'es', text: 'Spanish' },
+    { key: 305, value: 305, flag: 'fr', text: 'French' },
+    { key: 306, value: 306, flag: 'it', text: 'Italian' },
+    { key: 307, value: 307, flag: 'de', text: 'German' },
 ];
 
 export const ulpan1_audio_options = [

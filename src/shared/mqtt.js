@@ -31,7 +31,7 @@ class MqttMsg {
             transformWsUrl: transformUrl,
         };
 
-        const local = true;
+        const local = false;
         const url = local ? MQTT_LCL_URL : MQTT_EXT_URL;
         this.mq = mqtt.connect(`wss://${url}`, options);
 
@@ -66,7 +66,7 @@ class MqttMsg {
     send = (message, retain, topic) => {
         if(message !== "status")
             console.debug("[mqtt] Send data on topic: ", topic, message)
-        let options = {qos: 2, retain};
+        let options = {qos: 1, retain};
         this.mq.publish(topic, message, {...options}, (err) => {
             err && console.error('[mqtt] Error: ',err);
         })
@@ -74,12 +74,13 @@ class MqttMsg {
 
     watch = (callback, stat) => {
         this.mq.on('message',  (topic, data, packet) => {
+            console.debug("[mqtt] State from topic: ", topic);
             if (/state/.test(topic)) {
                 console.debug("[mqtt] State from topic: ", topic);
                 this.mq.emit('state', JSON.parse(data.toString()));
             } else {
                 let message = stat ? data.toString() : JSON.parse(data.toString());
-                // console.debug("[mqtt] message: ", message, ", on topic: ", topic);
+                console.debug("[mqtt] message: ", message, ", on topic: ", topic);
                 callback(message, topic)
             }
         })

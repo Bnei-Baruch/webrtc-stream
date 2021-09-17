@@ -6,6 +6,7 @@ import {servers_options, admin_videos_options, audio_options, JANUS_STR_SRV_GR} 
 import {kc} from "../components/UserManager";
 import LoginPage from "../components/LoginPage";
 import './AdminStreaming.css';
+import mqtt from "../shared/mqtt";
 
 class AdminStreaming extends Component {
 
@@ -31,7 +32,8 @@ class AdminStreaming extends Component {
             delete user.roles;
             user.role = "user";
             this.setState({user})
-            Janus.init({debug: ["log","error"], callback: this.initJanus});
+            this.initMQTT(user);
+            //Janus.init({debug: ["log","error"], callback: this.initJanus});
         } else {
             alert("Access denied!");
             window.location = 'https://stream.kli.one';
@@ -40,6 +42,19 @@ class AdminStreaming extends Component {
 
     componentWillUnmount() {
         this.state.janus.destroy();
+    };
+
+    initMQTT = (user) => {
+        console.log(user)
+        mqtt.init(user, (data) => {
+            console.log("[mqtt] init: ", data);
+            const watch = 'gxy/from-janus';
+            mqtt.join(watch);
+            mqtt.send(JSON.stringify({"janus":"create","transaction" :"1"}), false, 'gxydev/to-janus')
+            mqtt.watch((message, topic) => {
+                //this.onMqttMessage(message, topic);
+            }, false)
+        })
     };
 
     checkAutoPlay = () => {
