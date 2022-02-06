@@ -37,21 +37,20 @@ export const JANUS_SRV_EURFR = "https://stream.kli.one/janustrl";
 
 
 export const servers_options = [
-    { key: 0, text: 'Test', value: `https://gxydev.kli.one/janusgxy` },
-    { key: 1, text: 'Str1', value: `${JANUS_STR_SRV1}` },
-    { key: 2, text: 'Str2', value: `${JANUS_STR_SRV2}` },
-    { key: 3, text: 'Str3', value: `${JANUS_STR_SRV3}` },
-    { key: 4, text: 'Str4', value: `${JANUS_STR_SRV4}` },
-    { key: 5, text: 'Str5', value: `${JANUS_STR_SRV5}` },
-    { key: 6, text: 'Str6', value: `${JANUS_STR_SRV6}` },
-    { key: 7, text: 'Str7', value: `${JANUS_STR_SRV7}` },
-    { key: 8, text: 'Str8', value: `${JANUS_STR_SRV8}` },
-    { key: 9, text: 'Str9', value: `${JANUS_STR_SRV9}` },
-    { key: 10, text: 'Mcast', value: `https://str11.kli.one/janusgxy` },
+    { key: 0, text: 'Test', value: `gxydev` },
+    { key: 1, text: 'Str1', value: `str1` },
+    { key: 2, text: 'Str2', value: `str2` },
+    { key: 3, text: 'Str3', value: `str3` },
+    { key: 4, text: 'Str4', value: `str4` },
+    { key: 5, text: 'Str5', value: `str5` },
+    { key: 6, text: 'Str6', value: `str6` },
+    { key: 7, text: 'Str7', value: `str7` },
+    { key: 8, text: 'Str8', value: `str8` },
+    { key: 9, text: 'Str9', value: `str9` },
     // { key: 10, text: 'Str10', value: `${JANUS_STR_SRV10}` },
     // { key: 11, text: 'Str11', value: `${JANUS_STR_SRV11}` },
     // { key: 12, text: 'Str12', value: `${JANUS_STR_SRV12}` },
-    { key: 13, text: 'Mkz', value: `${JANUS_STR_SRV_BB}` },
+    // { key: 13, text: 'Mkz', value: `${JANUS_STR_SRV_BB}` },
 ];
 
 export const videos_options = [

@@ -47,9 +47,9 @@ class MqttMsg {
         this.mq.on('disconnect', (data) => console.error('[mqtt] Error: ', data));
     }
 
-    join = (topic) => {
+    join = (topic, chat) => {
         console.debug("[mqtt] Subscribe to: ", topic)
-        let options = {qos: 0, nl: false}
+        let options = chat ? {qos: 0, nl: false} : {qos: 1, nl: true};
         this.mq.subscribe(topic, {...options}, (err) => {
             err && console.error('[mqtt] Error: ', err);
         })
@@ -63,10 +63,11 @@ class MqttMsg {
         })
     }
 
-    send = (message, retain, topic) => {
+    send = (message, retain, topic, rxTopic) => {
         if(message !== "status")
             console.debug("[mqtt] Send data on topic: ", topic, message)
-        let options = {qos: 1, retain};
+        let properties = !!rxTopic ? {userProperties: this.user, responseTopic: rxTopic} : {userProperties: this.user};
+        let options = {qos: 1, retain, properties};
         this.mq.publish(topic, message, {...options}, (err) => {
             err && console.error('[mqtt] Error: ',err);
         })
@@ -78,6 +79,8 @@ class MqttMsg {
             if (/state/.test(topic)) {
                 console.debug("[mqtt] State from topic: ", topic);
                 this.mq.emit('state', JSON.parse(data.toString()));
+            } else if (/janus\/str/.test(topic)) {
+                this.mq.emit("MqttStream", data, topic.split("/")[2]);
             } else {
                 let message = stat ? data.toString() : JSON.parse(data.toString());
                 console.debug("[mqtt] message: ", message, ", on topic: ", topic);
