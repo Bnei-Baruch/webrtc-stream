@@ -120,7 +120,7 @@ class AdminStreaming extends Component {
                 })
             })
         } else {
-            Janus.destroyPlugin(videoStream).then(() => {
+            Janus.detach(videoStream).then(() => {
                 this.setState({videoStream: null});
             })
         }
@@ -140,7 +140,7 @@ class AdminStreaming extends Component {
                 })
             })
         } else {
-            Janus.destroyPlugin(audioStream).then(() => {
+            Janus.detach(audioStream).then(() => {
                 this.setState({audioStream: null});
             })
         }
