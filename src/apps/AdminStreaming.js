@@ -14,7 +14,7 @@ class AdminStreaming extends Component {
     state = {
         user: null,
         ice: null,
-        janus: null,
+        Janus: null,
         videoStream: null,
         audioStream: null,
         srv: `str2`,
@@ -74,10 +74,12 @@ class AdminStreaming extends Component {
     };
 
     setServer = (srv) => {
+        this.setState({srv});
         const {Janus, user} = this.state;
         if(Janus) {
             Janus.destroy().then(() => {
                 this.initJanus(user, srv);
+                this.setState({audio: false, video: false, audioStream: null, videoStream: null});
             });
         } else {
             this.initJanus(user, srv);
