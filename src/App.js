@@ -7,7 +7,8 @@ import 'semantic-ui-css/semantic.min.css';
 // import CaptureMonitor from "./apps/CaptureMonitor";
 // import LocalStream from "./apps/LocalStream";
 // import IngestMonitor from "./apps/IngestMonitor";
-import AdminStreaming from "./apps/AdminStreaming";
+// import AdminStreaming from "./apps/AdminStreaming";
+import HttpStreaming from "./apps/HttpStreaming";
 // import AudioOut from "./apps/AudioOut";
 
 class App extends Component {
@@ -16,7 +17,8 @@ class App extends Component {
     return (
         <Fragment>
             {/*<MainPage />*/}
-           <AdminStreaming/>
+           {/*<AdminStreaming/>*/}
+            <HttpStreaming />
            {/*<AudioOut />*/}
            {/*<DualOut />*/}
            {/*<CaptureMonitor />*/}
