@@ -1,15 +1,21 @@
 import {randomString} from "../shared/tools";
 import {EventEmitter} from "events";
+import log from "loglevel";
+import mqtt from "../shared/mqtt";
+import {STUN_SRV1, STUN_SRV2} from "../shared/consts";
 
 export class StreamingPlugin extends EventEmitter {
-  constructor (logger) {
+  constructor (list = [{urls: [STUN_SRV1, STUN_SRV2]}]) {
     super()
     this.id = randomString(12)
     this.janus = undefined
     this.janusHandleId = undefined
+    this.iceState = null
+    this.streamId = null
+    this.candidates = []
     this.pluginName = 'janus.plugin.streaming'
     this.pc = new RTCPeerConnection({
-      iceServers: [{urls: "stun:icesrv.kab.sh:3478"}]
+      iceServers: list
     })
   }
 
@@ -27,11 +33,12 @@ export class StreamingPlugin extends EventEmitter {
     return this.janus.transaction(message, payload, replyType)
   }
 
-  watch (id) {
-    const body = { request: 'watch', id }
+  watch (id, restart = false) {
+    this.streamId = id
+    const body = { request: 'watch', id, restart}
     return new Promise((resolve, reject) => {
       this.transaction('message', { body }, 'event').then((param) => {
-        console.log("[streaming] watch: ", param)
+        log.info("[streaming] watch: ", param)
         const {session_id, json } = param
 
         let audioTransceiver = null, videoTransceiver = null;
@@ -39,18 +46,14 @@ export class StreamingPlugin extends EventEmitter {
         if(transceivers && transceivers.length > 0) {
           for(let t of transceivers) {
             if(t?.receiver?.track?.kind === "audio") {
-              if (audioTransceiver.setDirection) {
+              if (audioTransceiver?.setDirection) {
                 audioTransceiver.setDirection("recvonly");
-              } else {
-                audioTransceiver.direction = "recvonly";
               }
               continue;
             }
             if(t?.receiver?.track?.kind === "video") {
-              if (videoTransceiver.setDirection) {
-                videoTransceiver.setDirection("sendonly");
-              } else {
-                videoTransceiver.direction = "sendonly";
+              if (videoTransceiver?.setDirection) {
+                videoTransceiver.setDirection("recvonly");
               }
               continue;
             }
@@ -58,38 +61,27 @@ export class StreamingPlugin extends EventEmitter {
         }
 
         if (json?.jsep) {
-          console.log('[streaming] sdp: ', json)
+          log.info('[streaming] sdp: ', json)
           this.sdpExchange(json.jsep)
         }
 
-        this.pc.onicecandidate = (e) => {
-          return this.transaction('trickle', { candidate: e.candidate })
-        };
+        if(restart) return
 
-        this.pc.onconnectionstatechange = (e) => {
-          console.log("[streaming] ICE State: ", e.target.connectionState)
-        };
-
-        this.pc.ontrack = (e) => {
-          console.log("[streaming] Got track: ", e)
-          let stream = new MediaStream();
-          stream.addTrack(e.track.clone());
-          resolve(stream);
-        };
+        this.initPcEvents(resolve)
 
       }).catch((err) => {
-        console.error('[streaming] StreamingJanusPlugin, cannot watch stream', err)
+        log.error('[streaming] StreamingJanusPlugin, cannot watch stream', err)
         reject(err)
       })
     })
   }
 
   sdpExchange(jsep) {
-    this.pc.setRemoteDescription(jsep);
+    this.pc.setRemoteDescription(jsep)
     this.pc.createAnswer().then((desc) => {
       this.pc.setLocalDescription(desc);
       this.start(desc)
-    }, error => console.error(error));
+    }, error => log.error(error));
   }
 
   start(jsep) {
@@ -102,7 +94,7 @@ export class StreamingPlugin extends EventEmitter {
     return this.transaction('message', message, 'event').then(({ data, json }) => {
       return { data, json }
     }).catch((err) => {
-      console.error('[streaming] StreamingJanusPlugin, cannot start stream', err)
+      log.error('[streaming] StreamingJanusPlugin, cannot start stream', err)
       throw err
     })
   }
@@ -111,7 +103,7 @@ export class StreamingPlugin extends EventEmitter {
     const body = { request: 'switch', id }
 
     return this.transaction('message', { body }, 'event').catch((err) => {
-      console.error('[streaming] StreamingJanusPlugin, cannot start stream', err)
+      log.error('[streaming] StreamingJanusPlugin, cannot start stream', err)
       throw err
     })
   }
@@ -125,7 +117,54 @@ export class StreamingPlugin extends EventEmitter {
         result(res.audioLevel ? res.audioLevel : 0);
       });
     });
-    //return config.volume[stream].value;
+  }
+
+  initPcEvents(resolve) {
+    this.pc.onicecandidate = (e) => {
+      return this.transaction('trickle', { candidate: e.candidate })
+    };
+
+    this.pc.onconnectionstatechange = (e) => {
+      log.info("[streaming] ICE State: ", e.target.connectionState)
+      this.iceState = e.target.connectionState
+      if(this.iceState === "disconnected") {
+        this.iceRestart()
+      }
+
+      // ICE restart does not help here, peer connection will be down
+      if(this.iceState === "failed") {
+        //TODO: handle failed ice state
+      }
+
+    };
+
+    this.pc.ontrack = (e) => {
+      log.info("[streaming] Got track: ", e)
+      let stream = new MediaStream();
+      stream.addTrack(e.track.clone());
+      resolve(stream);
+    };
+  }
+
+  iceRestart() {
+    setTimeout(() => {
+      let count = 0;
+      let chk = setInterval(() => {
+        count++;
+        if (count < 10 && this.iceState !== "disconnected") {
+          clearInterval(chk);
+        } else if (mqtt.mq.connected) {
+          log.debug("[streaming] - Trigger ICE Restart - ");
+          this.watch(this.streamId, true)
+          clearInterval(chk);
+        } else if (count >= 10) {
+          clearInterval(chk);
+          log.error("[streaming] - ICE Restart failed - ");
+        } else {
+          log.debug("[streaming] ICE Restart try: " + count)
+        }
+      }, 1000);
+    },1000)
   }
 
   success (janus, janusHandleId) {
@@ -139,12 +178,8 @@ export class StreamingPlugin extends EventEmitter {
     // Couldn't attach to the plugin
   }
 
-  onmessage (data, json) {
-    console.log('[streaming] onmessage: ', data, json)
-    if (json?.jsep) {
-      console.log('[streaming] sdp: ', data, json)
-      this.sdpExchange(json.jsep)
-    }
+  onmessage (data) {
+    log.info('[streaming] onmessage: ', data)
   }
 
   oncleanup () {
@@ -158,19 +193,23 @@ export class StreamingPlugin extends EventEmitter {
   }
 
   hangup () {
-    this.emit('hangup')
+    //this.emit('hangup')
   }
 
-  slowLink () {
-    this.emit('slowlink')
+  slowLink (uplink, lost, mid) {
+    const direction = uplink ? "sending" : "receiving";
+    log.info("[streaming] slowLink on " + direction + " packets on mid " + mid + " (" + lost + " lost packets)");
+    //this.emit('slowlink')
   }
 
-  mediaState (medium, on) {
-    this.emit('mediaState', medium, on)
+  mediaState (media, on) {
+    log.info('[streaming] mediaState: Janus ' + (on ? "start" : "stop") + " receiving our " + media)
+    //this.emit('mediaState', medium, on)
   }
 
-  webrtcState (isReady, cause) {
-    this.emit('webrtcState', isReady, cause)
+  webrtcState (isReady) {
+    log.info('[streaming] webrtcState: RTCPeerConnection is: ' + (isReady ? "up" : "down"))
+    //this.emit('webrtcState', isReady, cause)
   }
 
   detach () {

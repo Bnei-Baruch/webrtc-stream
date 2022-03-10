@@ -5,7 +5,8 @@ export const GEO_IP_INFO = process.env.REACT_APP_GEO_IP_INFO;
 export const DANTE_IN_IP = process.env.REACT_APP_DANTE_IN_IP;
 export const JSRP_STATE = process.env.REACT_APP_JSRP_STATE;
 export const JSDB_STATE = process.env.REACT_APP_JSDB_STATE;
-export const STUN_SRV_STR = process.env.REACT_APP_STUN_SRV_STR;
+export const STUN_SRV1 = process.env.REACT_APP_STUN_SRV1;
+export const STUN_SRV2 = process.env.REACT_APP_STUN_SRV2;
 export const STUN_SRV_GXY = process.env.REACT_APP_STUN_SRV_GXY;
 export const STUN_SRV_MKZ = process.env.REACT_APP_STUN_SRV_MKZ;
 export const ADMIN_SECRET = process.env.REACT_APP_ADMIN_SECRET;
@@ -34,6 +35,7 @@ export const JANUS_IP_EURFR = process.env.REACT_APP_JANUS_IP_EURFR;
 export const ENC_URL = process.env.REACT_APP_ENC_URL;
 export const JNS_SRV = process.env.REACT_APP_JNS_SRV
 export const JANUS_SRV_EURFR = "https://stream.kli.one/janustrl";
+export const MQTT_URL = process.env.REACT_APP_MQTT_URL;
 
 
 export const servers_options = [

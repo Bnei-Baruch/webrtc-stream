@@ -1,18 +1,24 @@
-import mqtt from 'mqtt';
-import {MQTT_LCL_URL, MQTT_EXT_URL, randomString} from "./tools";
+import mqtt from "mqtt";
+import {MQTT_URL} from "./consts";
+import {randomString} from "./tools";
+import log from "loglevel";
+
+const mqttTimeout = 30 // Seconds
+const mqttKeepalive = 1 // Seconds
 
 class MqttMsg {
-
     constructor() {
         this.user = null;
         this.mq = null;
-        this.connected = false;
+        this.isConnected = false;
         this.room = null;
         this.token = null;
+        this.reconnect_count = 0;
     }
 
     init = (user, callback) => {
         this.user = user;
+        const RC = mqttTimeout;
 
         const transformUrl = (url, options, client) => {
             client.options.password = this.token;
@@ -20,84 +26,120 @@ class MqttMsg {
         };
 
         let options = {
-            keepalive: 10,
-            connectTimeout: 10 * 1000,
-            clientId: user.id + "-" + randomString(5)  ,
-            protocolId: 'MQTT',
-            protocolVersion: 4,
+            keepalive: mqttKeepalive,
+            clientId: user.id + "-" + randomString(3),
+            protocolId: "MQTT",
+            protocolVersion: 5,
             clean: true,
             username: user.email,
             password: this.token,
             transformWsUrl: transformUrl,
+            properties: {
+                sessionExpiryInterval: 5,
+                maximumPacketSize: 256000,
+                requestResponseInformation: true,
+                requestProblemInformation: true,
+            },
         };
 
-        const local = false;
-        const url = local ? MQTT_LCL_URL : MQTT_EXT_URL;
-        this.mq = mqtt.connect(`wss://${url}`, options);
+        this.mq = mqtt.connect(`wss://${MQTT_URL}`, options);
+        this.mq.setMaxListeners(50)
 
-        this.mq.on('connect', (data) => {
-            if(data && !this.connected) {
-                console.log("[mqtt] Connected to server: ", data);
-                this.connected = true;
-                callback(data)
+        this.mq.on("connect", (data) => {
+            if (data && !this.isConnected) {
+                log.info('[mqtt] Connected to server: ', data);
+                this.isConnected = true;
+                if(typeof callback === "function") callback(false, false);
+            } else {
+                log.info("[mqtt] Connected: ", data);
+                this.isConnected = true;
+                if(this.reconnect_count > RC) {
+                    if(typeof callback === "function") callback(true, false);
+                }
+                this.reconnect_count = 0;
             }
         });
 
-        this.mq.on('error', (data) => console.error('[mqtt] Error: ', data));
-        this.mq.on('disconnect', (data) => console.error('[mqtt] Error: ', data));
-    }
+        this.mq.on("close", () => {
+            if(this.reconnect_count < RC + 2) {
+                this.reconnect_count++;
+                log.debug("[mqtt] reconnecting counter: " + this.reconnect_count)
+            }
+            if(this.reconnect_count === RC) {
+                this.reconnect_count++;
+                log.warn("[mqtt] - disconnected - after: " + this.reconnect_count + " seconds")
+                if(typeof callback === "function") callback(false, true);
+            }
+        });
+
+    };
 
     join = (topic, chat) => {
-        console.debug("[mqtt] Subscribe to: ", topic)
-        let options = chat ? {qos: 0, nl: false} : {qos: 1, nl: true};
+        if (!this.mq) return;
+        log.info("[mqtt] Subscribe to: ", topic);
+        let options = chat ? {qos: 0, nl: false} : {qos: 2, nl: true};
         this.mq.subscribe(topic, {...options}, (err) => {
-            err && console.error('[mqtt] Error: ', err);
-        })
-    }
+            err && log.error("[mqtt] Error: ", err);
+        });
+    };
 
     exit = (topic) => {
-        let options = {}
-        console.debug("[mqtt] Unsubscribe from: ", topic)
-        this.mq.unsubscribe(topic, {...options} ,(err) => {
-            err && console.error('[mqtt] Error: ',err);
-        })
-    }
+        if (!this.mq) return;
+        let options = {};
+        log.info("[mqtt] Unsubscribe from: ", topic);
+        this.mq.unsubscribe(topic, {...options}, (err) => {
+            err && log.error("[mqtt] Error: ", err);
+        });
+    };
 
-    send = (message, retain, topic, rxTopic) => {
-        if(message !== "status")
-            console.debug("[mqtt] Send data on topic: ", topic, message)
-        let properties = !!rxTopic ? {userProperties: this.user, responseTopic: rxTopic} : {userProperties: this.user};
+    send = (message, retain, topic, rxTopic, user) => {
+        if (!this.mq) return;
+        let correlationData = JSON.parse(message)?.transaction
+        let cd = correlationData ? " | transaction: " + correlationData : ""
+        log.debug("%c[mqtt] --> send message" + cd + " | topic: " + topic + " | data: " + message, "color: darkgrey");
+        let properties = !!rxTopic ? {userProperties: user || this.user, responseTopic: rxTopic, correlationData} : {userProperties: user || this.user};
         let options = {qos: 1, retain, properties};
         this.mq.publish(topic, message, {...options}, (err) => {
-            err && console.error('[mqtt] Error: ',err);
-        })
-    }
+            err && log.error("[mqtt] Error: ", err);
+        });
+    };
 
-    watch = (callback, stat) => {
-        this.mq.on('message',  (topic, data, packet) => {
-            console.debug("[mqtt] State from topic: ", topic);
-            if (/state/.test(topic)) {
-                console.debug("[mqtt] State from topic: ", topic);
-                this.mq.emit('state', JSON.parse(data.toString()));
-            } else if (/janus\/str/.test(topic)) {
-                this.mq.emit("MqttStream", data, topic.split("/")[2]);
-            } else {
-                let message = stat ? data.toString() : JSON.parse(data.toString());
-                console.debug("[mqtt] message: ", message, ", on topic: ", topic);
-                callback(message, topic)
+    watch = (callback) => {
+        this.mq.on("message", (topic, data, packet) => {
+            log.trace("[mqtt] <-- receive packet: ", packet)
+            let cd = packet?.properties?.correlationData ? " | transaction: " + packet?.properties?.correlationData?.toString() : ""
+            log.debug("%c[mqtt] <-- receive message" + cd + " | topic : " + topic, "color: darkgrey");
+            const t = topic.split("/")
+            if(t[0] === "msg") t.shift()
+            const [root, service, id, target] = t
+            switch(root) {
+                case "trl":
+                    if(service === "room" && target === "chat")
+                        this.mq.emit("MqttChatEvent", data);
+                    else if (service === "room" && target !== "chat" || service === "service" && id !== "user")
+                        callback(JSON.parse(data.toString()), topic);
+                    else if (service === "users" && id === "broadcast")
+                        this.mq.emit("MqttBroadcastMessage", data);
+                    else
+                        this.mq.emit("MqttPrivateMessage", data);
+                    break;
+                case "janus":
+                    const json = JSON.parse(data)
+                    const mit = json?.session_id || packet?.properties?.userProperties?.mit || service
+                    this.mq.emit(mit, data, id);
+                    break;
+                default:
+                    if(typeof callback === "function")
+                        callback(JSON.parse(data.toString()), topic);
             }
-        })
-    }
+        });
+    };
 
     setToken = (token) => {
         this.token = token;
-    }
-
+    };
 }
 
 const defaultMqtt = new MqttMsg();
 
 export default defaultMqtt;
-
-
-
