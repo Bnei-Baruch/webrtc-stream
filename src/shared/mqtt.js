@@ -4,7 +4,7 @@ import {randomString} from "./tools";
 import log from "loglevel";
 
 const mqttTimeout = 30 // Seconds
-const mqttKeepalive = 1 // Seconds
+const mqttKeepalive = 3 // Seconds
 
 class MqttMsg {
     constructor() {
