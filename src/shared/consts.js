@@ -201,6 +201,8 @@ export const audio_options = [
     { key: 'et', value: 58, text: 'Amharic' },
     { key: 'in', value: 59, text: 'Hindi' },
     { key: 'ir', value: 60, text: 'Persian' },
+    { key: 'ar', value: 61, text: 'Arabic' },
+    { key: 'id', value: 62, text: 'Indonesian' },
     { key: 103, value: 103, text: '', disabled: true, label: "Special"},
     { key: 10, value: 10, text: 'Heb - Rus' },
     { key: 17, value: 17, text: 'Heb - Eng' },
