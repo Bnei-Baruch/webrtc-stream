@@ -4,10 +4,10 @@ import 'semantic-ui-css/semantic.min.css';
 // import CroomStream from "./apps/CroomStream";
 // import StreamCapture from "./apps/StreamCapture";
 // import DualOut from "./apps/DualOut";
-import CaptureMonitor from "./apps/CaptureMonitor";
+// import CaptureMonitor from "./apps/CaptureMonitor";
 // import LocalStream from "./apps/LocalStream";
 // import IngestMonitor from "./apps/IngestMonitor";
-// import AdminStreaming from "./apps/AdminStreaming";
+import AdminStreaming from "./apps/AdminStreaming";
 // import HttpStreaming from "./apps/HttpStreaming";
 // import AudioOut from "./apps/AudioOut";
 
@@ -17,11 +17,11 @@ class App extends Component {
     return (
         <Fragment>
             {/*<MainPage />*/}
-           {/*<AdminStreaming/>*/}
+           <AdminStreaming/>
             {/*<HttpStreaming />*/}
            {/*<AudioOut />*/}
            {/*<DualOut />*/}
-           <CaptureMonitor />
+           {/*<CaptureMonitor />*/}
            {/*<LocalStream />*/}
            {/*<IngestMonitor />*/}
            {/*<CroomStream />*/}

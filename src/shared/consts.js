@@ -204,6 +204,7 @@ export const audio_options = [
     { key: 'ar', value: 62, text: 'Arabic' },
     { key: 'id', value: 63, text: 'Indonesian' },
     { key: 103, value: 103, text: '', disabled: true, label: "Special"},
+    { key: 'gxy-src', value: 64, text: 'Gxy - Src' },
     { key: 10, value: 10, text: 'Heb - Rus' },
     { key: 17, value: 17, text: 'Heb - Eng' },
     { key: 'gxy5', value: 204, text: 'Galaxy' },
@@ -215,6 +216,7 @@ export const audio_options = [
     { key: 305, value: 305, flag: 'fr', text: 'French' },
     { key: 306, value: 306, flag: 'it', text: 'Italian' },
     { key: 307, value: 307, flag: 'de', text: 'German' },
+    { key: 308, value: 308, flag: 'tr', text: 'Turkish' },
 ];
 
 export const ulpan1_audio_options = [
