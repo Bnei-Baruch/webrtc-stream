@@ -79,6 +79,7 @@ export class StreamingPlugin extends EventEmitter {
   sdpExchange(jsep) {
     this.pc.setRemoteDescription(jsep)
     this.pc.createAnswer().then((desc) => {
+      desc.sdp = desc.sdp.replace(/a=fmtp:111 minptime=10;useinbandfec=1\r\n/g, 'a=fmtp:111 minptime=10;useinbandfec=1;stereo=1;sprop-stereo=1\r\n');
       this.pc.setLocalDescription(desc);
       this.start(desc)
     }, error => log.error(error));
