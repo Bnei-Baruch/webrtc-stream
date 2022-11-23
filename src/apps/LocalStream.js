@@ -18,7 +18,7 @@ class LocalStream extends Component {
         audios: 15,
         muted: true,
         started: false,
-        ulpan: "Ulpan - 1",
+        ulpan: "Ulpan - 2",
     };
 
     componentDidMount() {

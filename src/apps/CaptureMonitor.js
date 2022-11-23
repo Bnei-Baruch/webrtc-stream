@@ -14,11 +14,11 @@ class CaptureMonitor extends Component {
         ulpan1: null,
         ulpan1_src: "mltcap",
         ulpan1_status: null,
-        ulpan1_timer: null,
+        ulpan1_timer: "00:00:00",
         ulpan2: null,
         ulpan2_src: "maincap",
         ulpan2_status: null,
-        ulpan2_timer: null,
+        ulpan2_timer: "00:00:00",
         audio: null,
         video: false,
         servers: `${JANUS_SRV_EURFR}`,
@@ -54,9 +54,7 @@ class CaptureMonitor extends Component {
     initMQTT = () => {
         mqtt.init(this.state.user, (data) => {
             console.log("[mqtt] init: ", data);
-            const watch = 'exec/service/data/#';
-            const local = window.location.hostname !== "shidur.kli.one";
-            const topic = local ? watch : 'bb/' + watch;
+            const topic = 'exec/service/data/#';
             mqtt.join(topic);
             mqtt.watch((message, topic) => {
                 this.onMqttMessage(message, topic);
@@ -68,19 +66,16 @@ class CaptureMonitor extends Component {
         const src = topic.split("/")[3]
         const {ulpan1_src,ulpan2_src} = this.state;
         let services = message.data;
-        if(services) {
-            for(let i=0; i<services.length; i++) {
-                if(ulpan1_src === src) {
-                    let ulpan1_status = services[i].alive;
-                    let ulpan1_timer = ulpan1_status ? toHms(services[i].runtime) : "00:00:00";
-                    this.setState({ulpan1_timer, ulpan1_status});
-                }
-                if(ulpan2_src === src) {
-                    let ulpan2_status = services[i].alive;
-                    let ulpan2_timer = ulpan2_status ? toHms(services[i].runtime) : "00:00:00";
-                    this.setState({ulpan2_timer, ulpan2_status});
-                }
-            }
+
+        if(ulpan1_src === src) {
+            let ulpan1_status = message.message === "On";
+            let ulpan1_timer = ulpan1_status && services?.out_time ? services.out_time.split('.')[0] : "00:00:00";
+            this.setState({ulpan1_timer, ulpan1_status});
+        }
+        if(ulpan2_src === src) {
+            let ulpan2_status = message.message === "On";
+            let ulpan2_timer = ulpan2_status && services?.out_time ? services.out_time.split('.')[0] : "00:00:00";
+            this.setState({ulpan2_timer, ulpan2_status});
         }
     };
 
