@@ -84,6 +84,7 @@ export const admin_videos_options = [
     { key: 2, text: '360p', value: 1 },
     // { key: 3, text: '480p', value: 66 },
     { key: 4, text: '720p', value: 16 },
+    { key: 5, text: '1080p', value: 264 },
     // { key: 5, text: 'RTCP', value: 103 },
     //{ key: 6, text: 'NoVideo', value: 4 },
 ];

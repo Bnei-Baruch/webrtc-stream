@@ -6,7 +6,7 @@ import {
     STUN_SRV_GXY,
     JSDB_STATE,
     JSRP_STATE,
-    ENC_URL, JNS_SRV
+    ENC_URL, JNS_SRV, STUN_SRV1
 } from "./consts";
 
 export const MQTT_LCL_URL = process.env.REACT_APP_MQTT_LCL_URL;
@@ -36,8 +36,8 @@ export const initJanus = (cb,er,lcl) => {
         debug: process.env.NODE_ENV !== 'production' ? ["log", "error"] : ["log", "error"],
         callback: () => {
             let janus = new Janus({
-                server: lcl ? JNS_SRV : JANUS_SRV_EURFR,
-                iceServers: [{urls: lcl ? STUN_SRV_MKZ : STUN_SRV_GXY}],
+                server: JNS_SRV,
+                iceServers: [{urls: STUN_SRV1}],
                 success: () => {
                     Janus.log(" :: Connected to JANUS");
                     cb(janus);
@@ -204,7 +204,7 @@ export const getState = (path, cb) => fetch(`${JSRP_STATE}/${path}`)
     })
     .catch(ex => Janus.log(`get ${path}`, ex));
 
-export const putData = (path, data, cb) => fetch(`${JSDB_STATE}/${path}`, {
+export const putData = (path, data, cb) => fetch(`${JSRP_STATE}/${path}`, {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
     body:  JSON.stringify(data)
