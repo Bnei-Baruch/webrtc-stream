@@ -45,38 +45,32 @@ class DualSettings extends Component {
         setTimeout(() => this.setState({disabled: false, loading: false}), 2000);
         let {dual, sound, service} = this.state;
         for(let i in dual) {
-            console.log(i)
             for(let s in service.services) {
-                console.log(s)
                 if(service.services[s].id === "dual1" && i === "d1") {
                     let l = sound[dual[i].left].ffmpeg_channel
                     let r = sound[dual[i].right].ffmpeg_channel
                     service.services[s].args[16] = `pan=stereo|c0=c${l}|c1=c${r},volume=+10dB`;
                     console.log(service.services[s].args[16])
-                    return
                 }
                 if(service.services[s].id === "dual2" && i === "d2") {
                     let l = sound[dual[i].left].ffmpeg_channel
                     let r = sound[dual[i].right].ffmpeg_channel
                     service.services[s].args[16] = `pan=stereo|c0=c${l}|c1=c${r},volume=+10dB`;
-                    return
                 }
                 if(service.services[s].id === "dual3" && i === "d3") {
                     let l = sound[dual[i].left].ffmpeg_channel
                     let r = sound[dual[i].right].ffmpeg_channel
                     service.services[s].args[16] = `pan=stereo|c0=c${l}|c1=c${r},volume=+10dB`;
-                    return
                 }
                 if(service.services[s].id === "dual4" && i === "d4") {
                     let l = sound[dual[i].left].ffmpeg_channel
                     let r = sound[dual[i].right].ffmpeg_channel
                     service.services[s].args[16] = `pan=stereo|c0=c${l}|c1=c${r},volume=+10dB`;
-                    return
                 }
             }
         }
-        putData('streamer/encoders/mac-str-main',  (service) => {
-            console.log(":: service status: ",service);
+        putData('streamer/encoders/mac-str-main',  service, (data) => {
+            console.log(":: service status: ", data);
             this.setState({service});
         });
     };
@@ -84,7 +78,7 @@ class DualSettings extends Component {
 
     render() {
 
-        const {dual,loading} = this.state;
+        const {dual,loading, disabled} = this.state;
 
         let dual_selection = Object.keys(dual).map((id, i) => {
             let data = dual[id];
@@ -120,7 +114,7 @@ class DualSettings extends Component {
                     {dual_selection}
                 </Message>
                 <Button fluid
-                        //disabled={status}
+                        disabled={disabled}
                         loading={loading}
                         positive
                         onClick={this.saveService} >
