@@ -204,6 +204,7 @@ export const audio_options = [
     { key: 'ir', value: 60, text: 'Persian' },
     { key: 'ar', value: 62, text: 'Arabic' },
     { key: 'id', value: 63, text: 'Indonesian' },
+    { key: 'am', value: 65, text: 'Armenian' },
     { key: 103, value: 103, text: '', disabled: true, label: "Special"},
     { key: 'gxy-src', value: 64, text: 'Gxy - Src' },
     { key: 10, value: 10, text: 'Heb - Rus' },
