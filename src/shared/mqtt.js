@@ -1,4 +1,4 @@
-import mqtt from "mqtt";
+import * as mqtt from 'mqtt';
 import {MQTT_URL, MSG_URL} from "./consts";
 import {randomString} from "./tools";
 import log from "loglevel";
