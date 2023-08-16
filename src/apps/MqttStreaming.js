@@ -86,32 +86,33 @@ class MqttStreaming extends Component {
         if(videoStream) {
             videoStream.switch(video_id);
         } else {
-            this.videoMute();
+            this.videoMute(video_id);
         }
     };
 
     setAudio = (audio_id) => {
-        this.setState({audio_id});
-        const {audioStream} = this.state;
-        if(audioStream) {
-            audioStream.switch(audio_id);
-        } else {
-            this.audioMute();
-        }
+        this.setState({audio_id}, () => {
+            const {audioStream} = this.state;
+            if(audioStream) {
+                audioStream.switch(audio_id);
+            } else {
+                this.audioMute();
+            }
+        });
     };
 
     setVolume = (value) => {
         this.refs.remoteAudio.volume = value;
     };
 
-    videoMute = () => {
+    videoMute = (video_id) => {
         const {Janus, videoStream, video} = this.state;
         if (!video) {
             let videoStream = new StreamingPlugin();
             Janus.attach(videoStream).then(data => {
                 this.setState({videoStream});
                 console.log(data)
-                videoStream.watch(1).then(stream => {
+                videoStream.watch(video_id).then(stream => {
                     console.log("[clinet] Got stream: ", stream)
                     let video = this.refs.remoteVideo;
                     video.srcObject = stream;
@@ -126,13 +127,14 @@ class MqttStreaming extends Component {
     };
 
     audioMute = () => {
-        const {Janus, audioStream, audio} = this.state;
-        if (!audio) {
+        let {Janus, audioStream, audio, audio_id} = this.state;
+        audio = !audio
+        if (audio) {
             let audioStream = new StreamingPlugin();
             Janus.attach(audioStream).then(data => {
                 this.setState({audioStream});
                 console.log(data)
-                audioStream.watch(15).then(stream => {
+                audioStream.watch(audio_id).then(stream => {
                     let audio = this.refs.remoteAudio;
                     audio.srcObject = stream;
                 })
@@ -142,7 +144,7 @@ class MqttStreaming extends Component {
                 this.setState({audioStream: null});
             })
         }
-        this.setState({audio: !audio});
+        this.setState({audio});
     };
 
     toggleFullScreen = () => {
