@@ -36,7 +36,7 @@ export const ENC_URL = process.env.REACT_APP_ENC_URL;
 export const JNS_SRV = process.env.REACT_APP_JNS_SRV
 export const JANUS_SRV_EURFR = "https://stream.kli.one/janustrl";
 export const MQTT_URL = process.env.REACT_APP_MQTT_URL;
-
+export const MSG_URL = process.env.REACT_APP_MSG_URL;
 
 export const servers_options = [
     { key: 0, text: 'Test', value: `gxydev` },
@@ -90,6 +90,15 @@ export const admin_videos_options = [
 ];
 
 export const audios_options = [
+    { key: 101, value: 101, text: 'Workshop', disabled: true, icon: "tags"},
+    { key: 1, value: 64, text: 'Original' },
+    { key: 2, value: 2, flag: 'il', text: 'Hebrew' },
+    { key: 3, value: 3, flag: 'ru', text: 'Russian' },
+    { key: 4, value: 4, flag: 'us', text: 'English' },
+    { key: 6, value: 6, flag: 'es', text: 'Spanish' },
+    { key: 5, value: 5, flag: 'fr', text: 'French' },
+    { key: 8, value: 8, flag: 'it', text: 'Italian' },
+    { key: 7, value: 7, flag: 'de', text: 'German' },
     { key: 100, value: 100, text: 'Source', disabled: true, icon: "tags" },
     { key: 'he', value: 15, flag: 'il', text: 'Hebrew' },
     { key: 'ru', value: 23, flag: 'ru', text: 'Russian' },
@@ -118,21 +127,12 @@ export const audios_options = [
     { key: 'et', value: 58, flag: 'et', text: 'Amharic' },
     { key: 'in', value: 59, flag: 'in', text: 'Hindi' },
     { key: 'ir', value: 60, flag: 'ir', text: 'Persian' },
-    { key: 101, value: 101, text: 'Workshop', disabled: true, icon: "tags"},
-    { key: 2, value: 2, flag: 'il', text: 'Hebrew' },
-    { key: 3, value: 3, flag: 'ru', text: 'Russian' },
-    { key: 4, value: 4, flag: 'us', text: 'English' },
-    { key: 6, value: 6, flag: 'es', text: 'Spanish' },
-    { key: 5, value: 5, flag: 'fr', text: 'French' },
-    { key: 8, value: 8, flag: 'it', text: 'Italian' },
-    { key: 7, value: 7, flag: 'de', text: 'German' },
+    { key: 'ar', value: 62, text: 'Arabic' },
+    { key: 'id', value: 63, text: 'Indonesian' },
+    { key: 'am', value: 65, text: 'Armenian' },
     { key: 102, value: 102, text: 'Special', disabled: true, icon: "tags" },
     { key: 10, value: 10, text: 'Heb - Rus' },
     { key: 17, value: 17, text: 'Heb - Eng' },
-    { key: 201, value: 201, text: 'Galaxy1' },
-    { key: 203, value: 203, text: 'Galaxy2' },
-    { key: 202, value: 202, text: 'Galaxy4' },
-    { key: 204, value: 204, text: 'Galaxy5' },
 ];
 
 export const dual_languages = [

@@ -1,5 +1,5 @@
 import mqtt from "mqtt";
-import {MQTT_URL} from "./consts";
+import {MQTT_URL, MSG_URL} from "./consts";
 import {randomString} from "./tools";
 import log from "loglevel";
 
@@ -42,7 +42,9 @@ class MqttMsg {
             },
         };
 
-        this.mq = mqtt.connect(`wss://${MQTT_URL}`, options);
+        const url = user.role === "guest" ? MQTT_URL : MSG_URL;
+
+        this.mq = mqtt.connect(`wss://${url}`, options);
         this.mq.setMaxListeners(50)
 
         this.mq.on("connect", (data) => {
