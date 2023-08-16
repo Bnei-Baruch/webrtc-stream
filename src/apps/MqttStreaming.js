@@ -26,16 +26,10 @@ class MqttStreaming extends Component {
     };
 
     checkPermission = (user) => {
-        const bb_user = kc.hasRealmRole("bb_user");
-        if (bb_user) {
-            delete user.roles;
-            user.role = "guest";
-            this.setState({user})
-            this.initMQTT(user);
-        } else {
-            alert("Access denied!");
-            window.location = 'https://stream.kli.one';
-        }
+        delete user.roles;
+        user.role = "guest";
+        this.setState({user})
+        this.initMQTT(user);
     };
 
     componentWillUnmount() {
