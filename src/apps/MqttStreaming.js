@@ -159,7 +159,7 @@ class MqttStreaming extends Component {
 
     render() {
 
-        const {user, servers, video_id, audio_id, muted, video} = this.state;
+        const {user, servers, video_id, audio_id, audio, video} = this.state;
 
         let login = (<LoginPage user={user} checkPermission={this.checkPermission} />);
 
@@ -207,7 +207,7 @@ class MqttStreaming extends Component {
                            id="remoteAudio"
                            autoPlay={true}
                            controls={false}
-                           muted={muted}
+                           muted={!audio}
                            playsInline={true}/>
                     <audio ref="trlAudio"
                            id="trlAudio"
@@ -226,9 +226,9 @@ class MqttStreaming extends Component {
                         <VolumeSlider volume={this.setVolume}/>
                     </Grid.Column>
                     <Grid.Column width={2}>
-                        <Button positive={!muted}
-                                negative={muted}
-                                icon={muted ? "volume off" : "volume up"}
+                        <Button positive={audio}
+                                negative={!audio}
+                                icon={!audio ? "volume off" : "volume up"}
                                 onClick={this.audioMute}/>
                     </Grid.Column>
                 </Grid>
