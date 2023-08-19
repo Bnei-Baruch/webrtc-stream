@@ -2,7 +2,6 @@ import React, {Component, Fragment} from 'react';
 import { Segment, Menu, Select, Button, Grid } from 'semantic-ui-react';
 import VolumeSlider from "../components/VolumeSlider";
 import {videos_options, audios_options} from "../shared/consts";
-import {kc} from "../components/UserManager";
 import LoginPage from "../components/LoginPage";
 import './AdminStreaming.css';
 import mqtt from "../shared/mqtt";

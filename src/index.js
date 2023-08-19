@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import log from "loglevel";
 
-log.setLevel('info')
+log.setLevel('error')
 const loglevel = new URLSearchParams(window.location.search).get('loglevel');
 if(loglevel) {
     log.setLevel(loglevel)
