@@ -37,6 +37,7 @@ export const JNS_SRV = process.env.REACT_APP_JNS_SRV
 export const JANUS_SRV_EURFR = "https://stream.kli.one/janustrl";
 export const MQTT_URL = process.env.REACT_APP_MQTT_URL;
 export const MSG_URL = process.env.REACT_APP_MSG_URL;
+export const BBMQ_URL = process.env.REACT_APP_BBMQ_URL;
 
 export const servers_options = [
     { key: 0, text: 'Test', value: `gxydev` },

@@ -1,201 +1,82 @@
 import React, { Component } from 'react';
-import { Janus } from "../lib/janus";
 import {Segment, Label, Button, Table, Menu} from 'semantic-ui-react';
 import VolumeSlider from "../components/VolumeSlider";
-import {JANUS_SRV_EURFR} from "../shared/consts";
 import './AdminStreaming.css';
-import {initJanus} from "../shared/tools";
+import mqtt from "../shared/mqtt";
+import log from "loglevel";
+import {JanusMqtt} from "../lib/janus-mqtt";
+import {StreamingPlugin} from "../lib/streaming-plugin";
 
 class CroomStream extends Component {
 
     state = {
         janus: null,
-        videostream: null,
-        audiostream: null,
+        videoStream: null,
+        audioStream: null,
         audio: null,
         video: false,
-        servers: `${JANUS_SRV_EURFR}`,
-        audios: 15,
         muted: true,
         started: false,
-        ulpan: "Ulpan - 1",
     };
 
     componentDidMount() {
-        this.initApp(this.props.id);
-    };
+        let user = {role: "guest"}
+        this.initMQTT(user);
+    }
 
     componentWillUnmount() {
-        this.state.janus.destroy();
+        if(this.state.Janus) this.state.Janus.destroy();
     };
 
-    initApp = () => {
-        initJanus(janus => {
-            this.setState({janus});
-            this.initVideoStream(80);
-        }, er => {
-            setTimeout(() => {
-                this.initApp();
-            }, 5000);
-        }, true);
-    };
-
-    checkAutoPlay = () => {
-        let promise = document.createElement("video").play();
-        if(promise instanceof Promise) {
-            promise.catch(function(error) {
-                console.log("AUTOPLAY ERROR: ", error)
-            }).then(function() {});
-        }
-    };
-
-    initVideoStream = (id) => {
-        let {janus} = this.state;
-        janus.attach({
-            plugin: "janus.plugin.streaming",
-            opaqueId: "videostream-"+Janus.randomString(12),
-            success: (videostream) => {
-                Janus.log(videostream);
-                this.setState({videostream});
-                videostream.send({message: {request: "watch", id: id}});
-            },
-            error: (error) => {
-                Janus.log("Error attaching plugin: " + error);
-            },
-            iceState: (state) => {
-                Janus.log("ICE state changed to " + state);
-            },
-            webrtcState: (on) => {
-                Janus.log("Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
-            },
-            slowLink: (uplink, lost, mid) => {
-                Janus.log("Janus reports problems " + (uplink ? "sending" : "receiving") +
-                    " packets on mid " + mid + " (" + lost + " lost packets)");
-            },
-            onmessage: (msg, jsep) => {
-                this.onStreamingMessage(this.state.videostream, msg, jsep, false);
-            },
-            onremotetrack: (track, mid, on) => {
-                Janus.debug(" ::: Got a remote video track event :::");
-                Janus.debug("Remote video track (mid=" + mid + ") " + (on ? "added" : "removed") + ":", track);
-                if(!on) return;
-                let stream = new MediaStream();
-                stream.addTrack(track.clone());
-                Janus.log("Created remote video stream:", stream);
-                let video = this.refs.remoteVideo;
-                Janus.attachMediaStream(video, stream);
-            },
-            oncleanup: () => {
-                Janus.log("Got a cleanup notification");
-            }
+    initMQTT = (user) => {
+        mqtt.init(user, (data) => {
+            log.info("[mqtt] init: ", data);
+            mqtt.watch();
+            this.initJanus(user, 'mkz')
         });
     };
 
-    initAudioStream = (id) => {
-        let {janus} = this.state;
-        janus.attach({
-            plugin: "janus.plugin.streaming",
-            opaqueId: "audiostream-"+Janus.randomString(12),
-            success: (audiostream) => {
-                Janus.log(audiostream);
-                this.setState({audiostream});
-                audiostream.send({message: {request: "watch", id: id}});
-                audiostream.muteAudio()
-            },
-            error: (error) => {
-                Janus.log("Error attaching plugin: " + error);
-            },
-            iceState: (state) => {
-                Janus.log("ICE state changed to " + state);
-            },
-            webrtcState: (on) => {
-                Janus.log("Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
-            },
-            slowLink: (uplink, lost, mid) => {
-                Janus.log("Janus reports problems " + (uplink ? "sending" : "receiving") +
-                    " packets on mid " + mid + " (" + lost + " lost packets)");
-            },
-            onmessage: (msg, jsep) => {
-                this.onStreamingMessage(this.state.audiostream, msg, jsep, false);
-            },
-            onremotetrack: (track, mid, on) => {
-                Janus.debug(" ::: Got a remote audio track event :::");
-                Janus.debug("Remote audio track (mid=" + mid + ") " + (on ? "added" : "removed") + ":", track);
-                if(this.state.audio_stream) return;
-                let stream = new MediaStream();
-                stream.addTrack(track.clone());
-                this.setState({audio_stream: stream});
-                Janus.log("Created remote audio stream:", stream);
-                let audio = this.refs.remoteAudio;
-                this.checkAutoPlay();
-                Janus.attachMediaStream(audio, stream);
-                //StreamVisualizer2(stream, this.refs.canvas1.current,50);
-            },
-            oncleanup: () => {
-                Janus.log("Got a cleanup notification");
-            }
-        });
+    initJanus = (user, srv) => {
+        let Janus = new JanusMqtt(user, srv, "MqttStream")
+        let videoStream = new StreamingPlugin();
+
+        Janus.init().then(data => {
+            log.info(data)
+            this.setState({Janus, user});
+            Janus.attach(videoStream).then(data => {
+                this.setState({videoStream});
+                log.info(data)
+                videoStream.watch(80).then(stream => {
+                    log.info("[clinet] Got stream: ", stream)
+                    let video = this.refs.remoteVideo;
+                    video.srcObject = stream;
+                })
+            })
+        })
     };
 
-    onStreamingMessage = (handle, msg, jsep, initdata) => {
-        Janus.log("Got a message", msg);
-
-        if(jsep !== undefined && jsep !== null) {
-            Janus.log("Handling SDP as well...", jsep);
-
-            // Answer
-            handle.createAnswer({
-                jsep: jsep,
-                media: { audioSend: false, videoSend: false, data: initdata },
-                success: (jsep) => {
-                    Janus.log("Got SDP!", jsep);
-                    let body = { request: "start" };
-                    handle.send({message: body, jsep: jsep});
-                },
-                customizeSdp: (jsep) => {
-                    Janus.debug(":: Modify original SDP: ",jsep);
-                    jsep.sdp = jsep.sdp.replace(/a=fmtp:111 minptime=10;useinbandfec=1\r\n/g, 'a=fmtp:111 minptime=10;useinbandfec=1;stereo=1;sprop-stereo=1\r\n');
-                },
-                error: (error) => {
-                    Janus.log("WebRTC error: " + error);
-                }
-            });
+    audioMute = () => {
+        let {Janus, audioStream, muted} = this.state;
+        if (muted) {
+            let audioStream = new StreamingPlugin();
+            Janus.attach(audioStream).then(data => {
+                this.setState({audioStream});
+                console.log(data)
+                audioStream.watch(81).then(stream => {
+                    let audio = this.refs.remoteAudio;
+                    audio.srcObject = stream;
+                })
+            })
+        } else {
+            Janus.detach(audioStream).then(() => {
+                this.setState({audioStream: null});
+            })
         }
-    };
-
-    setServer = (servers) => {
-        Janus.log(servers);
-        this.setState({servers});
-        this.initJanus(servers);
-    };
-
-    setVideo = (videos) => {
-        if(this.state.videostream) {
-            this.setState({videos});
-            this.state.videostream.send({message: { request: "switch", id: videos }});
-        }
-    };
-
-    setAudio = (audios) => {
-        if(this.state.audiostream) {
-            this.setState({audios});
-            this.state.audiostream.send({message: {request: "switch", id: audios}});
-        }
+        this.setState({muted: !muted});
     };
 
     setVolume = (value) => {
         this.refs.remoteAudio.volume = value;
-    };
-
-    audioMute = () => {
-        this.setState({muted: !this.state.muted});
-        this.refs.remoteAudio.muted = !this.state.muted;
-        if(!this.state.audiostream && this.state.muted) {
-            this.initAudioStream(81);
-        } else {
-            this.state.audiostream.hangup();
-            this.setState({audiostream: null, audio_stream: null});
-        }
     };
 
     toggleFullScreen = () => {
@@ -237,7 +118,6 @@ class CroomStream extends Component {
                        width="100%"
                        height="100%"
                        muted
-                       defaultMuted
                        autoPlay={true}
                        controls={true}
                        playsInline={true} />
