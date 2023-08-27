@@ -4,11 +4,13 @@ import {Segment, Grid} from 'semantic-ui-react';
 import './AdminStreaming.css';
 import {initJanus} from "../shared/tools";
 import LocalStream from "./LocalStream";
+import mqtt from "../shared/mqtt";
+import {JanusMqtt} from "../lib/janus-mqtt";
 
 class IngestMonitor extends Component {
 
     state = {
-        janus: null,
+        Janus: null,
         ulpan1: null,
         ulpan2: null,
         audio: null,
@@ -16,7 +18,8 @@ class IngestMonitor extends Component {
         videos: 1,
         audios: 15,
         muted: true,
-        started: false
+        started: false,
+        user: {id: "ingest-monitor", email: "ingest-monitor@bbdomain.org"}
     };
 
     componentDidMount() {
@@ -28,14 +31,21 @@ class IngestMonitor extends Component {
     };
 
     initApp = () => {
-        initJanus(janus => {
-            this.setState({janus});
-            this.setState({started: true});
-        }, er => {
-            setTimeout(() => {
-                this.initApp();
-            }, 5000);
-        }, true);
+        const {user} = this.state;
+        mqtt.init(user, (data) => {
+            console.log("[mqtt] init: ", data);
+            mqtt.watch();
+            this.initJanus(user, 'mkz')
+        });
+    };
+
+    initJanus = (user, srv) => {
+        let Janus = new JanusMqtt(user, srv, "MqttStream")
+
+        Janus.init().then(data => {
+            console.log(data)
+            this.setState({Janus, user});
+        })
     };
 
 
@@ -46,10 +56,10 @@ class IngestMonitor extends Component {
               <Grid columns={2} stackable textAlign='center'>
                   <Grid.Row verticalAlign='middle'>
                       <Grid.Column>
-                          <LocalStream {...this.state} id={511}/>
+                          <LocalStream {...this.state} video_id={511} audio_id={512} ulpan="Ulpan - 1" />
                       </Grid.Column>
                       <Grid.Column>
-                          <LocalStream {...this.state} id={521}/>
+                          <LocalStream {...this.state} video_id={521} audio_id={522} ulpan="Ulpan - 2"/>
                       </Grid.Column>
                   </Grid.Row>
 

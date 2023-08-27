@@ -4,9 +4,9 @@ import 'semantic-ui-css/semantic.min.css';
 // import CroomStream from "./apps/CroomStream";
 // import StreamCapture from "./apps/StreamCapture";
 // import DualOut from "./apps/DualOut";
-import CaptureMonitor from "./apps/CaptureMonitor";
+// import CaptureMonitor from "./apps/CaptureMonitor";
 // import LocalStream from "./apps/LocalStream";
-// import IngestMonitor from "./apps/IngestMonitor";
+import IngestMonitor from "./apps/IngestMonitor";
 // import AdminStreaming from "./apps/AdminStreaming";
 // import MqttStreaming from "./apps/MqttStreaming";
 // import HttpStreaming from "./apps/HttpStreaming";
@@ -25,9 +25,9 @@ class App extends Component {
             {/*<FullScreenStream />*/}
            {/*<AudioOut />*/}
            {/*<DualOut />*/}
-           <CaptureMonitor />
+           {/*<CaptureMonitor />*/}
            {/*<LocalStream />*/}
-           {/*<IngestMonitor />*/}
+           <IngestMonitor />
            {/*<CroomStream />*/}
            {/*<StreamCapture />*/}
         </Fragment>
