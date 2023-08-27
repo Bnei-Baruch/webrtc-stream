@@ -1,10 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 // import MainPage from "./apps/MainPage";
-import CroomStream from "./apps/CroomStream";
+// import CroomStream from "./apps/CroomStream";
 // import StreamCapture from "./apps/StreamCapture";
 // import DualOut from "./apps/DualOut";
-// import CaptureMonitor from "./apps/CaptureMonitor";
+import CaptureMonitor from "./apps/CaptureMonitor";
 // import LocalStream from "./apps/LocalStream";
 // import IngestMonitor from "./apps/IngestMonitor";
 // import AdminStreaming from "./apps/AdminStreaming";
@@ -25,10 +25,10 @@ class App extends Component {
             {/*<FullScreenStream />*/}
            {/*<AudioOut />*/}
            {/*<DualOut />*/}
-           {/*<CaptureMonitor />*/}
+           <CaptureMonitor />
            {/*<LocalStream />*/}
            {/*<IngestMonitor />*/}
-           <CroomStream />
+           {/*<CroomStream />*/}
            {/*<StreamCapture />*/}
         </Fragment>
     );

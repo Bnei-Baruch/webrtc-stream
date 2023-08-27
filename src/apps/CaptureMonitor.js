@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { Janus } from "../lib/janus";
 import { Segment, Header, Message, Grid } from 'semantic-ui-react';
-//import VolumeSlider from "../components/VolumeSlider";
 import {JANUS_SRV_EURFR} from "../shared/consts";
 import './AdminStreaming.css';
-import {initJanus,toHms} from "../shared/tools";
 import mqtt from "../shared/mqtt";
+import {JanusMqtt} from "../lib/janus-mqtt";
+import {StreamingPlugin} from "../lib/streaming-plugin";
+import log from "loglevel";
 
 class CaptureMonitor extends Component {
 
@@ -30,7 +30,6 @@ class CaptureMonitor extends Component {
     };
 
     componentDidMount() {
-        this.initApp();
         this.initMQTT();
     };
 
@@ -38,27 +37,45 @@ class CaptureMonitor extends Component {
         this.state.janus.destroy();
     };
 
-    initApp = () => {
-        initJanus(janus => {
-            this.setState({janus});
-            this.setState({started: true});
-            this.initVideoStream("ulpan1", 511);
-            this.initVideoStream("ulpan2", 521)
-        }, er => {
-            setTimeout(() => {
-                this.initApp();
-            }, 5000);
-        }, true);
-    };
-
     initMQTT = () => {
-        mqtt.init(this.state.user, (data) => {
+        const {user} = this.state;
+        mqtt.init(user, (data) => {
             console.log("[mqtt] init: ", data);
+            this.initJanus(user);
             const topic = 'exec/service/data/#';
             mqtt.join(topic);
             mqtt.watch((message, topic) => {
                 this.onMqttMessage(message, topic);
             }, false)
+        })
+    };
+
+    initJanus = (user) => {
+        let Janus = new JanusMqtt(user, "mkz", "MqttStream")
+        let multiStream = new StreamingPlugin();
+        let singleStream = new StreamingPlugin();
+
+        Janus.init().then(data => {
+            log.info(data)
+            this.setState({Janus, user});
+            Janus.attach(multiStream).then(data => {
+                this.setState({multiStream});
+                log.info(data)
+                multiStream.watch(511).then(stream => {
+                    log.info("[clinet] Got stream: ", stream)
+                    let video = this.refs.ulpan1;
+                    video.srcObject = stream;
+                })
+            })
+            Janus.attach(singleStream).then(data => {
+                this.setState({singleStream});
+                log.info(data)
+                singleStream.watch(521).then(stream => {
+                    log.info("[clinet] Got stream: ", stream)
+                    let video = this.refs.ulpan2;
+                    video.srcObject = stream;
+                })
+            })
         })
     };
 
@@ -77,179 +94,6 @@ class CaptureMonitor extends Component {
             let ulpan2_timer = ulpan2_status && services?.out_time ? services.out_time.split('.')[0] : "00:00:00";
             this.setState({ulpan2_timer, ulpan2_status});
         }
-    };
-
-    checkAutoPlay = () => {
-        let promise = document.createElement("video").play();
-        if(promise instanceof Promise) {
-            promise.catch(function(error) {
-                console.log("AUTOPLAY ERROR: ", error)
-            }).then(function() {});
-        }
-    };
-
-    initVideoStream = (u, id) => {
-        let {janus} = this.state;
-        janus.attach({
-            plugin: "janus.plugin.streaming",
-            opaqueId: "videostream-"+Janus.randomString(12),
-            success: (videostream) => {
-                Janus.log(videostream);
-                this.setState({[u]: videostream});
-                videostream.send({message: {request: "watch", id: id}});
-            },
-            error: (error) => {
-                Janus.log("Error attaching plugin: " + error);
-            },
-            iceState: (state) => {
-                Janus.log("ICE state changed to " + state);
-            },
-            webrtcState: (on) => {
-                Janus.log("Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
-            },
-            slowLink: (uplink, lost, mid) => {
-                Janus.log("Janus reports problems " + (uplink ? "sending" : "receiving") +
-                    " packets on mid " + mid + " (" + lost + " lost packets)");
-            },
-            onmessage: (msg, jsep) => {
-                this.onStreamingMessage(this.state[u], msg, jsep, false);
-            },
-            onremotetrack: (track, mid, on) => {
-                Janus.debug(" ::: Got a remote video track event :::");
-                Janus.debug("Remote video track (mid=" + mid + ") " + (on ? "added" : "removed") + ":", track);
-                if(!on) return;
-                let stream = new MediaStream();
-                stream.addTrack(track.clone());
-                Janus.log("Created remote video stream:", stream);
-                let video = this.refs[u];
-                Janus.attachMediaStream(video, stream);
-            },
-            oncleanup: () => {
-                Janus.log("Got a cleanup notification");
-            }
-        });
-    };
-
-    initAudioStream = () => {
-        let {janus,audios} = this.state;
-        janus.attach({
-            plugin: "janus.plugin.streaming",
-            opaqueId: "audiostream-"+Janus.randomString(12),
-            success: (audiostream) => {
-                Janus.log(audiostream);
-                this.setState({audiostream});
-                audiostream.send({message: {request: "watch", id: audios}});
-                audiostream.muteAudio()
-            },
-            error: (error) => {
-                Janus.log("Error attaching plugin: " + error);
-            },
-            iceState: (state) => {
-                Janus.log("ICE state changed to " + state);
-            },
-            webrtcState: (on) => {
-                Janus.log("Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
-            },
-            slowLink: (uplink, lost, mid) => {
-                Janus.log("Janus reports problems " + (uplink ? "sending" : "receiving") +
-                    " packets on mid " + mid + " (" + lost + " lost packets)");
-            },
-            onmessage: (msg, jsep) => {
-                this.onStreamingMessage(this.state.audiostream, msg, jsep, false);
-            },
-            onremotetrack: (track, mid, on) => {
-                Janus.debug(" ::: Got a remote audio track event :::");
-                Janus.debug("Remote audio track (mid=" + mid + ") " + (on ? "added" : "removed") + ":", track);
-                if(this.state.audio_stream) return;
-                let stream = new MediaStream();
-                stream.addTrack(track.clone());
-                this.setState({audio_stream: stream});
-                Janus.log("Created remote audio stream:", stream);
-                let audio = this.refs.remoteAudio;
-                Janus.attachMediaStream(audio, stream);
-                //StreamVisualizer2(stream, this.refs.canvas1.current,50);
-            },
-            oncleanup: () => {
-                Janus.log("Got a cleanup notification");
-            }
-        });
-    };
-
-    onStreamingMessage = (handle, msg, jsep, initdata) => {
-        Janus.log("Got a message", msg);
-
-        if(jsep !== undefined && jsep !== null) {
-            Janus.log("Handling SDP as well...", jsep);
-
-            // Answer
-            handle.createAnswer({
-                jsep: jsep,
-                media: { audioSend: false, videoSend: false, data: initdata },
-                success: (jsep) => {
-                    Janus.log("Got SDP!", jsep);
-                    let body = { request: "start" };
-                    handle.send({message: body, jsep: jsep});
-                },
-                customizeSdp: (jsep) => {
-                    Janus.debug(":: Modify original SDP: ",jsep);
-                    jsep.sdp = jsep.sdp.replace(/a=fmtp:111 minptime=10;useinbandfec=1\r\n/g, 'a=fmtp:111 minptime=10;useinbandfec=1;stereo=1;sprop-stereo=1\r\n');
-                },
-                error: (error) => {
-                    Janus.log("WebRTC error: " + error);
-                }
-            });
-        }
-    };
-
-    setServer = (servers) => {
-        Janus.log(servers);
-        this.setState({servers});
-        this.initJanus(servers);
-    };
-
-    setVideo = (videos) => {
-        if(this.state.videostream) {
-            this.setState({videos});
-            this.state.videostream.send({message: { request: "switch", id: videos }});
-        }
-    };
-
-    setAudio = (audios) => {
-        if(this.state.audiostream) {
-            this.setState({audios});
-            this.state.audiostream.send({message: {request: "switch", id: audios}});
-        }
-    };
-
-    setVolume = (value) => {
-        this.refs.remoteAudio.volume = value;
-    };
-
-    audioMute = () => {
-        this.setState({muted: !this.state.muted});
-        this.refs.remoteAudio.muted = !this.state.muted;
-        if(!this.state.audiostream && this.state.muted) {
-            this.initAudioStream();
-        } else {
-            this.state.audiostream.hangup();
-            this.setState({audiostream: null, audio_stream: null});
-        }
-    };
-
-    videoMute = () => {
-        let video = this.state.video;
-        if(!this.state.videostream && !video) {
-            this.initVideoStream();
-        } else {
-            this.state.videostream.hangup();
-            this.setState({videostream: null, video_stream: null});
-        }
-        this.setState({video: !video});
-    };
-
-    toggleFullScreen = () => {
-        let vid = this.refs.remoteVideo;
-        if(vid) vid.webkitEnterFullscreen();
     };
 
 
