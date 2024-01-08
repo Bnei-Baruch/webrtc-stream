@@ -1,4 +1,4 @@
-import * as mqtt from 'mqtt';
+import mqtt from 'mqtt';
 import {BBMQ_URL, MQTT_URL, MSG_URL} from "./consts";
 import {randomString} from "./tools";
 import log from "loglevel";
@@ -43,7 +43,7 @@ class MqttMsg {
         };
 
         //const url = user.role === "guest" ? MQTT_URL : MSG_URL;
-        const url = BBMQ_URL;
+        const url = MSG_URL;
 
         this.mq = mqtt.connect(`wss://${url}`, options);
         this.mq.setMaxListeners(50)
