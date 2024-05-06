@@ -6,8 +6,8 @@ import 'semantic-ui-css/semantic.min.css';
 // import DualOut from "./apps/DualOut";
 // import CaptureMonitor from "./apps/CaptureMonitor";
 // import LocalStream from "./apps/LocalStream";
-// import IngestMonitor from "./apps/IngestMonitor";
-import AdminStreaming from "./apps/AdminStreaming";
+import IngestMonitor from "./apps/IngestMonitor";
+// import AdminStreaming from "./apps/AdminStreaming";
 // import MqttStreaming from "./apps/MqttStreaming";
 // import HttpStreaming from "./apps/HttpStreaming";
 // import FullScreenStream from "./apps/FullScreenStream";
@@ -19,7 +19,7 @@ class App extends Component {
     return (
         <Fragment>
             {/*<MainPage />*/}
-           <AdminStreaming/>
+           {/*<AdminStreaming/>*/}
            {/* <MqttStreaming />*/}
             {/*<HttpStreaming />*/}
             {/*<FullScreenStream />*/}
@@ -27,7 +27,7 @@ class App extends Component {
            {/*<DualOut />*/}
            {/*<CaptureMonitor />*/}
            {/*<LocalStream />*/}
-           {/*<IngestMonitor />*/}
+           <IngestMonitor />
            {/*<CroomStream />*/}
            {/*<StreamCapture />*/}
         </Fragment>
