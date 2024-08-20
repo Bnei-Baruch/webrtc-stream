@@ -19,7 +19,7 @@ class AdminStreaming extends Component {
         audioStream: null,
         srv: `str2`,
         video_id: 1,
-        audio_id: 15,
+        audio_id: 64,
         video: false,
         audio: false,
         started: false
@@ -107,13 +107,13 @@ class AdminStreaming extends Component {
     };
 
     videoMute = () => {
-        const {Janus, videoStream, video} = this.state;
+        const {Janus, videoStream, video, video_id} = this.state;
         if (!video) {
             let videoStream = new StreamingPlugin();
             Janus.attach(videoStream).then(data => {
                 this.setState({videoStream});
                 console.log(data)
-                videoStream.watch(1).then(stream => {
+                videoStream.watch(video_id).then(stream => {
                     console.log("[clinet] Got stream: ", stream)
                     let video = this.refs.remoteVideo;
                     video.srcObject = stream;
@@ -128,13 +128,13 @@ class AdminStreaming extends Component {
     };
 
     audioMute = () => {
-        const {Janus, audioStream, audio} = this.state;
+        const {Janus, audioStream, audio, audio_id} = this.state;
         if (!audio) {
             let audioStream = new StreamingPlugin();
             Janus.attach(audioStream).then(data => {
                 this.setState({audioStream});
                 console.log(data)
-                audioStream.watch(15).then(stream => {
+                audioStream.watch(audio_id).then(stream => {
                     let audio = this.refs.remoteAudio;
                     audio.srcObject = stream;
                 })

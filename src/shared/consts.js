@@ -168,6 +168,7 @@ export const dual_languages = [
 
 export const audio_options = [
     { key: 101, value: 101, text: '', disabled: true, label: "Workshop"},
+    { key: 1, value: 64, text: "Source"},
     { key: 2, value: 2, text: 'Hebrew' },
     { key: 3, value: 3, text: 'Russian' },
     { key: 4, value: 4, text: 'English' },
