@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from 'react';
-import { Segment, Menu, Select, Button, Grid } from 'semantic-ui-react';
+import {Segment, Menu, Select, Button, Grid, Checkbox} from 'semantic-ui-react';
 import VolumeSlider from "../components/VolumeSlider";
 import {servers_options, admin_videos_options, audio_options} from "../shared/consts";
 import {kc} from "../components/UserManager";
@@ -22,6 +22,7 @@ class AdminStreaming extends Component {
         audio_id: 64,
         video: false,
         audio: false,
+        res_fixed: false,
         started: false
     };
 
@@ -155,7 +156,7 @@ class AdminStreaming extends Component {
 
   render() {
 
-      const {user, srv, video_id, audio_id, audio, video} = this.state;
+      const {res_fixed, user, srv, video_id, audio_id, audio, video} = this.state;
 
       let login = (<LoginPage user={user} checkPermission={this.checkPermission} />);
 
@@ -173,6 +174,9 @@ class AdminStreaming extends Component {
                           <Button positive={video} negative={!video} size='huge'
                                   icon={video ? "eye" : "eye slash"}
                                   onClick={this.videoMute} />
+                      </Menu.Item>
+                      <Menu.Item>
+                          <Checkbox checked={res_fixed} toggle onChange={() => this.setState({res_fixed: !res_fixed})} />
                       </Menu.Item>
                       <Menu.Item>
                           <Select
@@ -200,7 +204,8 @@ class AdminStreaming extends Component {
                   </Menu>
               </Segment>
               { !video ? '' :
-                  <video ref="remoteVideo"
+                  <video className={!res_fixed ? "res_fixed" : "res_video"}
+                         ref="remoteVideo"
                          id="remoteVideo"
                          width="640"
                          height="360"

@@ -40,7 +40,7 @@ export const MSG_URL = process.env.REACT_APP_MSG_URL;
 export const BBMQ_URL = process.env.REACT_APP_BBMQ_URL;
 
 export const servers_options = [
-    { key: 0, text: 'Test', value: `gxydev` },
+    { key: 0, text: 'str10', value: `str10` },
     { key: 1, text: 'Str1', value: `str1` },
     { key: 2, text: 'Str2', value: `str2` },
     { key: 3, text: 'Str3', value: `str3` },

@@ -8,8 +8,22 @@ video {
     object-fit: contain;
     width: 100%;
     height: 100%;
+    /*max-height: 360px;*/
+    /*max-width: 640px;*/
+}
+
+.res_fixed {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
     max-height: 360px;
     max-width: 640px;
+}
+
+.res_video {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
 }
 
 .virtual_segment {
