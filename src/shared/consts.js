@@ -50,6 +50,7 @@ export const servers_options = [
     { key: 7, text: 'Str7', value: `str7` },
     { key: 8, text: 'Str8', value: `str8` },
     { key: 9, text: 'Str9', value: `str9` },
+    { key: 10, text: 'Test', value: `gxydev` },
     // { key: 10, text: 'Str10', value: `${JANUS_STR_SRV10}` },
     // { key: 11, text: 'Str11', value: `${JANUS_STR_SRV11}` },
     // { key: 12, text: 'Str12', value: `${JANUS_STR_SRV12}` },
