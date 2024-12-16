@@ -1,7 +1,7 @@
 import React, {Component, Fragment} from 'react';
 import { Segment, Menu, Select, Button, Grid } from 'semantic-ui-react';
 import VolumeSlider from "../components/VolumeSlider";
-import {videos_options, audios_options} from "../shared/consts";
+import {videos_options, audios_options, admin_av1_videos_options} from "../shared/consts";
 import LoginPage from "../components/LoginPage";
 import './AdminStreaming.css';
 import mqtt from "../shared/mqtt";
@@ -39,7 +39,7 @@ class MqttStreaming extends Component {
         mqtt.init(user, (data) => {
             console.log("[mqtt] init: ", data);
             mqtt.watch();
-            this.initJanus(user, 'str1')
+            this.initJanus(user, 'str2')
         });
     };
 
@@ -168,7 +168,7 @@ class MqttStreaming extends Component {
                                 error={!video_id}
                                 placeholder="Video:"
                                 value={video_id}
-                                options={videos_options}
+                                options={admin_av1_videos_options}
                                 onChange={(e, {value}) => this.setVideo(value)}/>
                         </Menu.Item>
                         <Menu.Item>
