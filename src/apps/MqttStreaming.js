@@ -148,7 +148,12 @@ class MqttStreaming extends Component {
 
     toggleFullScreen = () => {
         let vid = this.refs.remoteVideo;
-        if(vid) vid.webkitEnterFullscreen();
+        if (!vid) return;
+        if (vid.requestFullscreen) vid.requestFullscreen();
+        else if (vid.webkitRequestFullscreen) vid.webkitRequestFullscreen();
+        else if (vid.mozRequestFullScreen) vid.mozRequestFullScreen();
+        else if (vid.msRequestFullscreen) vid.msRequestFullscreen();
+        else if (vid.webkitEnterFullscreen) vid.webkitEnterFullscreen();
     };
 
 

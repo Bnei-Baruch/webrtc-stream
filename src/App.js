@@ -20,7 +20,7 @@ class App extends Component {
         <Fragment>
             {/*<MainPage />*/}
            <AdminStreaming/>
-           {/* <MqttStreaming />*/}
+            {/*<MqttStreaming />*/}
             {/*<HttpStreaming />*/}
             {/*<FullScreenStream />*/}
            {/*<AudioOut />*/}
