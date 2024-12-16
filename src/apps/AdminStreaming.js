@@ -1,7 +1,7 @@
 import React, {Component, Fragment} from 'react';
 import {Segment, Menu, Select, Button, Grid, Checkbox} from 'semantic-ui-react';
 import VolumeSlider from "../components/VolumeSlider";
-import {servers_options, admin_videos_options, audio_options} from "../shared/consts";
+import {servers_options, admin_videos_options, audio_options, admin_av1_videos_options} from "../shared/consts";
 import {kc} from "../components/UserManager";
 import LoginPage from "../components/LoginPage";
 import './AdminStreaming.css';
@@ -23,7 +23,8 @@ class AdminStreaming extends Component {
         video: false,
         audio: false,
         res_fixed: false,
-        started: false
+        started: false,
+        av1_codec: false
     };
 
     checkPermission = (user) => {
@@ -156,7 +157,7 @@ class AdminStreaming extends Component {
 
   render() {
 
-      const {res_fixed, user, srv, video_id, audio_id, audio, video} = this.state;
+      const {av1_codec, res_fixed, user, srv, video_id, audio_id, audio, video} = this.state;
 
       let login = (<LoginPage user={user} checkPermission={this.checkPermission} />);
 
@@ -176,7 +177,7 @@ class AdminStreaming extends Component {
                                   onClick={this.videoMute} />
                       </Menu.Item>
                       <Menu.Item>
-                          <Checkbox checked={res_fixed} toggle onChange={() => this.setState({res_fixed: !res_fixed})} />
+                          <Checkbox label='AV1' checked={av1_codec} toggle onChange={() => this.setState({av1_codec: !av1_codec})} />
                       </Menu.Item>
                       <Menu.Item>
                           <Select
@@ -184,7 +185,7 @@ class AdminStreaming extends Component {
                               error={!video_id}
                               placeholder="Video:"
                               value={video_id}
-                              options={admin_videos_options}
+                              options={!av1_codec ? admin_videos_options : admin_av1_videos_options}
                               onChange={(e,{value}) => this.setVideo(value)} />
                       </Menu.Item>
                       <Menu.Item>
@@ -221,10 +222,11 @@ class AdminStreaming extends Component {
                      muted={false} />
 
               <Grid columns={3}>
-                  <Grid.Column>
-                  </Grid.Column>
-                  <Grid.Column width={14}>
+                  <Grid.Column width={12}>
                       <VolumeSlider volume={this.setVolume} />
+                  </Grid.Column>
+                  <Grid.Column width={2}>
+                      <Checkbox checked={res_fixed} toggle onChange={() => this.setState({res_fixed: !res_fixed})} />
                   </Grid.Column>
                   <Grid.Column width={1}>
                       <Button color='blue'
