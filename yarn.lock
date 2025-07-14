@@ -3075,11 +3075,6 @@ js-sdsl@4.3.0:
   resolved "https://registry.yarnpkg.com/js-sdsl/-/js-sdsl-4.3.0.tgz#aeefe32a451f7af88425b11fdb5f58c90ae1d711"
   integrity sha512-mifzlm2+5nZ+lEcLJMoBK0/IH/bDg8XnJfd/Wq6IP+xoCjLZsTOnV2QpxlVbX9bMnkl5PdEjNtBJ9Cj1NjifhQ==
 
-js-sha256@^0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/js-sha256/-/js-sha256-0.11.0.tgz#256a921d9292f7fe98905face82e367abaca9576"
-  integrity sha512-6xNlKayMZvds9h1Y1VWc0fQHQ82BxTXizWPEtEeGvmOUYpBRy4gbWroHLpzowe6xiQhHpelCQiE7HEdznyBL9Q==
-
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -3124,23 +3119,15 @@ json5@^2.1.2:
   dependencies:
     minimist "^1.2.5"
 
-jwt-decode@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-4.0.0.tgz#2270352425fd413785b2faf11f6e755c5151bd4b"
-  integrity sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==
-
 keyboard-key@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/keyboard-key/-/keyboard-key-1.1.0.tgz#6f2e8e37fa11475bb1f1d65d5174f1b35653f5b7"
   integrity sha512-qkBzPTi3rlAKvX7k0/ub44sqOfXeLc/jcnGGmj5c7BJpU8eDrEVPyhCvNYAaoubbsLm9uGWwQJO1ytQK1a9/dQ==
 
-keycloak-js@24.0.2:
-  version "24.0.2"
-  resolved "https://registry.yarnpkg.com/keycloak-js/-/keycloak-js-24.0.2.tgz#9e7320ed1859b0f493acbc57c64728da2b5eb49b"
-  integrity sha512-V2N8cSz3NfON98XHp+DCzvrb1WW35JalL5Zphe/uoVWOxcof7v522Yz9Q2O3BqXqXP3V/H9ml6o24BwwtXUTGA==
-  dependencies:
-    js-sha256 "^0.11.0"
-    jwt-decode "^4.0.0"
+keycloak-js@26.2.0:
+  version "26.2.0"
+  resolved "https://registry.yarnpkg.com/keycloak-js/-/keycloak-js-26.2.0.tgz#0924feec13a014563b2e041e255657c24c145714"
+  integrity sha512-CrFcXTN+d6J0V/1v3Zpioys6qHNWE6yUzVVIsCUAmFn9H14GZ0vuYod+lt+SSpMgWGPuneDZBSGBAeLBFuqjsw==
 
 kind-of@^6.0.2:
   version "6.0.3"
