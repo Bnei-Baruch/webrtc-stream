@@ -229,6 +229,7 @@ export const audio_options = [
     { key: 'gxy-src', value: 64, text: 'Gxy - Src' },
     { key: 10, value: 10, text: 'Heb - Rus' },
     { key: 17, value: 17, text: 'Heb - Eng' },
+    { key: 18, value: 18, text: 'Heb - Ger' },
     { key: 'gxy5', value: 204, text: 'Galaxy' },
     { key: 104, value: 104, text: '', disabled: true, label: "Trl"},
     { key: 301, value: 301, flag: 'il', text: 'Hebrew' },
