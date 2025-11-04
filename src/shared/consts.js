@@ -232,14 +232,14 @@ export const audio_options = [
     { key: 18, value: 18, text: 'Heb - Ger' },
     { key: 'gxy5', value: 204, text: 'Galaxy' },
     { key: 104, value: 104, text: '', disabled: true, label: "Trl"},
-    { key: 301, value: 301, flag: 'il', text: 'Hebrew' },
-    { key: 302, value: 302, flag: 'ru', text: 'Russian' },
-    { key: 303, value: 303, flag: 'us', text: 'English' },
-    { key: 304, value: 304, flag: 'es', text: 'Spanish' },
-    { key: 305, value: 305, flag: 'fr', text: 'French' },
-    { key: 306, value: 306, flag: 'it', text: 'Italian' },
-    { key: 307, value: 307, flag: 'de', text: 'German' },
-    { key: 308, value: 308, flag: 'tr', text: 'Turkish' },
+    { key: 401, value: 401, flag: 'il', text: 'Hebrew' },
+    { key: 402, value: 402, flag: 'ru', text: 'Russian' },
+    { key: 403, value: 403, flag: 'us', text: 'English' },
+    { key: 404, value: 404, flag: 'es', text: 'Spanish' },
+    { key: 405, value: 405, flag: 'fr', text: 'French' },
+    { key: 406, value: 406, flag: 'it', text: 'Italian' },
+    { key: 407, value: 407, flag: 'de', text: 'German' },
+    { key: 408, value: 408, flag: 'tr', text: 'Turkish' },
 ];
 
 export const ulpan1_audio_options = [
