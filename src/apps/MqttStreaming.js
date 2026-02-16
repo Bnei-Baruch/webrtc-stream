@@ -7,6 +7,7 @@ import './AdminStreaming.css';
 import mqtt from "../shared/mqtt";
 import {JanusMqtt} from "../lib/janus-mqtt";
 import {StreamingPlugin} from "../lib/streaming-plugin";
+import {getData} from "../shared/tools";
 
 class MqttStreaming extends Component {
 
@@ -24,6 +25,11 @@ class MqttStreaming extends Component {
         started: false
     };
 
+
+    // componentDidMount() {
+    //     this.initMQTT({id: "guest"});
+    // }
+
     checkPermission = (user) => {
         delete user.roles;
         user.role = "guest";
@@ -39,7 +45,10 @@ class MqttStreaming extends Component {
         mqtt.init(user, (data) => {
             console.log("[mqtt] init: ", data);
             mqtt.watch();
-            this.initJanus(user, 'str2')
+            getData(`https://strdb.kab.sh/server`, data => {
+                console.log("[strdb] server: ", data);
+                this.initJanus(user, data.server)
+            })
         });
     };
 
@@ -238,6 +247,7 @@ class MqttStreaming extends Component {
         return (
             <Fragment>
                 {user ? content : login}
+                {/*{content}*/}
             </Fragment>
         );
     }
