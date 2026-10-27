@@ -45,6 +45,7 @@ class MqttStreaming extends Component {
         mqtt.init(user, (data) => {
             console.log("[mqtt] init: ", data);
             mqtt.watch();
+            //this.initJanus(user, 'str1')
             getData(`https://strdb.kab.sh/server`, data => {
                 console.log("[strdb] server: ", data);
                 this.initJanus(user, data.server)

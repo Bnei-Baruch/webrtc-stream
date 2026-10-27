@@ -177,6 +177,14 @@ export const dual_languages = [
     { key: 'am', value: "amn", flag: 'et', text: 'Amharic' },
     { key: 'in', value: "hin", flag: 'in', text: 'Hindi' },
     { key: 'ir', value: "per", flag: 'ir', text: 'Persian' },
+    { key: 'ar', value: "ara", flag: 'sa', text: 'Arabic' },
+    { key: 'id', value: "ind", flag: 'id', text: 'Indonesian' },
+    { key: 'hy', value: "arm", flag: 'am', text: 'Armenian' },
+    { key: 'da', value: "dan", flag: 'dk', text: 'Danish' },
+    { key: 'et', value: "est", flag: 'ee', text: 'Estonian' },
+    { key: 'el', value: "gre", flag: 'gr', text: 'Greek' },
+    { key: 'tl', value: "tgl", flag: 'ph', text: 'Tagalog' },
+    { key: 'ab', value: "aze", flag: 'az', text: 'Azerbaijani' },
 ];
 
 export const audio_options = [
